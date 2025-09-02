@@ -14,16 +14,371 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_packs: {
+        Row: {
+          created_at: string | null
+          date_from: string
+          date_to: string
+          file_path: string | null
+          generated_by: string
+          id: string
+          name: string
+          organization_id: string
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date_from: string
+          date_to: string
+          file_path?: string | null
+          generated_by: string
+          id?: string
+          name: string
+          organization_id: string
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date_from?: string
+          date_to?: string
+          file_path?: string | null
+          generated_by?: string
+          id?: string
+          name?: string
+          organization_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_packs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compliance_tasks: {
+        Row: {
+          assigned_to: string | null
+          category: Database["public"]["Enums"]["compliance_category"]
+          completed_date: string | null
+          created_at: string | null
+          created_by: string
+          description: string | null
+          due_date: string
+          evidence_required: boolean | null
+          id: string
+          organization_id: string
+          priority: number | null
+          status: Database["public"]["Enums"]["task_status"] | null
+          template_id: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          category: Database["public"]["Enums"]["compliance_category"]
+          completed_date?: string | null
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          due_date: string
+          evidence_required?: boolean | null
+          id?: string
+          organization_id: string
+          priority?: number | null
+          status?: Database["public"]["Enums"]["task_status"] | null
+          template_id?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          category?: Database["public"]["Enums"]["compliance_category"]
+          completed_date?: string | null
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          due_date?: string
+          evidence_required?: boolean | null
+          id?: string
+          organization_id?: string
+          priority?: number | null
+          status?: Database["public"]["Enums"]["task_status"] | null
+          template_id?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_tasks_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compliance_tasks_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compliance_templates: {
+        Row: {
+          category: Database["public"]["Enums"]["compliance_category"]
+          created_at: string | null
+          description: string | null
+          evidence_required: boolean | null
+          guidance_url: string | null
+          id: string
+          industry: string | null
+          is_active: boolean | null
+          name: string
+          recurrence_days: number | null
+          state_code: string | null
+          updated_at: string | null
+          version: string | null
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["compliance_category"]
+          created_at?: string | null
+          description?: string | null
+          evidence_required?: boolean | null
+          guidance_url?: string | null
+          id?: string
+          industry?: string | null
+          is_active?: boolean | null
+          name: string
+          recurrence_days?: number | null
+          state_code?: string | null
+          updated_at?: string | null
+          version?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["compliance_category"]
+          created_at?: string | null
+          description?: string | null
+          evidence_required?: boolean | null
+          guidance_url?: string | null
+          id?: string
+          industry?: string | null
+          is_active?: boolean | null
+          name?: string
+          recurrence_days?: number | null
+          state_code?: string | null
+          updated_at?: string | null
+          version?: string | null
+        }
+        Relationships: []
+      }
+      evidence: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          evidence_type: Database["public"]["Enums"]["evidence_type"] | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          file_type: string | null
+          id: string
+          organization_id: string
+          task_id: string
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          evidence_type?: Database["public"]["Enums"]["evidence_type"] | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          organization_id: string
+          task_id: string
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          evidence_type?: Database["public"]["Enums"]["evidence_type"] | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          organization_id?: string
+          task_id?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evidence_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_members: {
+        Row: {
+          created_at: string | null
+          id: string
+          organization_id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          organization_id: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          organization_id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          address: string | null
+          created_at: string | null
+          created_by: string
+          email: string | null
+          id: string
+          industry: string | null
+          name: string
+          phone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string | null
+          created_by: string
+          email?: string | null
+          id?: string
+          industry?: string | null
+          name: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string | null
+          created_by?: string
+          email?: string | null
+          id?: string
+          industry?: string | null
+          name?: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          phone: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_organization_member: {
+        Args: { _org_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "manager" | "user"
+      compliance_category: "food_safety" | "whs" | "fire_safety" | "test_tag"
+      evidence_type: "document" | "image" | "video" | "other"
+      task_status: "pending" | "in_progress" | "completed" | "overdue"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +505,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "manager", "user"],
+      compliance_category: ["food_safety", "whs", "fire_safety", "test_tag"],
+      evidence_type: ["document", "image", "video", "other"],
+      task_status: ["pending", "in_progress", "completed", "overdue"],
+    },
   },
 } as const
