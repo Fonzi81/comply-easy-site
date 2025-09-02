@@ -15,8 +15,13 @@ import {
   Clock, 
   Download,
   Plus,
-  Settings
+  Settings,
+  Bell
 } from "lucide-react";
+import AddTaskModal from "@/components/AddTaskModal";
+import AuditPackModal from "@/components/AuditPackModal";
+import ReminderModal from "@/components/ReminderModal";
+import ComplianceCalendar from "@/components/ComplianceCalendar";
 
 interface User {
   username: string;
@@ -37,6 +42,9 @@ interface ComplianceItem {
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [complianceItems, setComplianceItems] = useState<ComplianceItem[]>([]);
+  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [isAuditPackOpen, setIsAuditPackOpen] = useState(false);
+  const [isReminderOpen, setIsReminderOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -95,6 +103,26 @@ const Dashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem('user');
     navigate('/login');
+  };
+
+  const handleAddTask = (task: ComplianceItem) => {
+    const updatedItems = [...complianceItems, task];
+    setComplianceItems(updatedItems);
+    localStorage.setItem('complianceItems', JSON.stringify(updatedItems));
+  };
+
+  const handleAddReminder = (reminder: any) => {
+    const existingReminders = JSON.parse(localStorage.getItem('reminders') || '[]');
+    const updatedReminders = [...existingReminders, reminder];
+    localStorage.setItem('reminders', JSON.stringify(updatedReminders));
+  };
+
+  const handleTaskStatusChange = (taskId: string, newStatus: 'completed' | 'upcoming' | 'overdue') => {
+    const updatedItems = complianceItems.map(item => 
+      item.id === taskId ? { ...item, status: newStatus } : item
+    );
+    setComplianceItems(updatedItems);
+    localStorage.setItem('complianceItems', JSON.stringify(updatedItems));
   };
 
   const getStatusBadgeVariant = (status: string) => {
@@ -205,6 +233,7 @@ const Dashboard = () => {
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="calendar">Calendar</TabsTrigger>
             <TabsTrigger value="food-safety">Food Safety</TabsTrigger>
             <TabsTrigger value="whs">WHS</TabsTrigger>
             <TabsTrigger value="fire-safety">Fire Safety</TabsTrigger>
@@ -244,16 +273,28 @@ const Dashboard = () => {
                   <CardDescription>Frequently used features</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => setIsAddTaskOpen(true)}
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Compliance Task
                   </Button>
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => setIsAuditPackOpen(true)}
+                  >
                     <Download className="w-4 h-4 mr-2" />
                     Generate Audit Pack
                   </Button>
-                  <Button className="w-full justify-start" variant="outline">
-                    <Calendar className="w-4 h-4 mr-2" />
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => setIsReminderOpen(true)}
+                  >
+                    <Bell className="w-4 h-4 mr-2" />
                     Schedule Reminder
                   </Button>
                   <Button className="w-full justify-start" variant="outline">
@@ -263,6 +304,10 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="calendar" className="space-y-6">
+            <ComplianceCalendar complianceItems={complianceItems} />
           </TabsContent>
 
           {['food-safety', 'whs', 'fire-safety', 'test-tag'].map((category) => (
@@ -294,6 +339,15 @@ const Dashboard = () => {
                             <Badge variant={getStatusBadgeVariant(item.status)}>
                               {item.status}
                             </Badge>
+                            {item.status === 'upcoming' && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleTaskStatusChange(item.id, 'completed')}
+                              >
+                                Mark Complete
+                              </Button>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -314,6 +368,25 @@ const Dashboard = () => {
             </TabsContent>
           ))}
         </Tabs>
+
+        {/* Modals */}
+        <AddTaskModal 
+          open={isAddTaskOpen}
+          onOpenChange={setIsAddTaskOpen}
+          onAddTask={handleAddTask}
+        />
+        
+        <AuditPackModal 
+          open={isAuditPackOpen}
+          onOpenChange={setIsAuditPackOpen}
+          complianceItems={complianceItems}
+        />
+        
+        <ReminderModal 
+          open={isReminderOpen}
+          onOpenChange={setIsReminderOpen}
+          onAddReminder={handleAddReminder}
+        />
       </main>
     </div>
   );
