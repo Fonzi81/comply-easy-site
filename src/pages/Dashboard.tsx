@@ -16,12 +16,17 @@ import {
   Download,
   Plus,
   Settings,
-  Bell
+  Bell,
+  Upload,
+  Folder
 } from "lucide-react";
 import AddTaskModal from "@/components/AddTaskModal";
 import AuditPackModal from "@/components/AuditPackModal";
 import ReminderModal from "@/components/ReminderModal";
 import ComplianceCalendar from "@/components/ComplianceCalendar";
+import TemplateModal from "@/components/TemplateModal";
+import EvidenceManager from "@/components/EvidenceManager";
+import EvidenceModal from "@/components/EvidenceModal";
 
 interface User {
   username: string;
@@ -45,6 +50,8 @@ const Dashboard = () => {
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [isAuditPackOpen, setIsAuditPackOpen] = useState(false);
   const [isReminderOpen, setIsReminderOpen] = useState(false);
+  const [isTemplateOpen, setIsTemplateOpen] = useState(false);
+  const [isEvidenceOpen, setIsEvidenceOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -234,6 +241,7 @@ const Dashboard = () => {
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
+            <TabsTrigger value="evidence">Evidence</TabsTrigger>
             <TabsTrigger value="food-safety">Food Safety</TabsTrigger>
             <TabsTrigger value="whs">WHS</TabsTrigger>
             <TabsTrigger value="fire-safety">Fire Safety</TabsTrigger>
@@ -284,6 +292,22 @@ const Dashboard = () => {
                   <Button 
                     className="w-full justify-start" 
                     variant="outline"
+                    onClick={() => setIsTemplateOpen(true)}
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Generate Templates
+                  </Button>
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => setIsEvidenceOpen(true)}
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    Upload Evidence
+                  </Button>
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
                     onClick={() => setIsAuditPackOpen(true)}
                   >
                     <Download className="w-4 h-4 mr-2" />
@@ -297,10 +321,6 @@ const Dashboard = () => {
                     <Bell className="w-4 h-4 mr-2" />
                     Schedule Reminder
                   </Button>
-                  <Button className="w-full justify-start" variant="outline">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Compliance Settings
-                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -308,6 +328,10 @@ const Dashboard = () => {
 
           <TabsContent value="calendar" className="space-y-6">
             <ComplianceCalendar complianceItems={complianceItems} />
+          </TabsContent>
+
+          <TabsContent value="evidence" className="space-y-6">
+            <EvidenceManager />
           </TabsContent>
 
           {['food-safety', 'whs', 'fire-safety', 'test-tag'].map((category) => (
@@ -386,6 +410,16 @@ const Dashboard = () => {
           open={isReminderOpen}
           onOpenChange={setIsReminderOpen}
           onAddReminder={handleAddReminder}
+        />
+        
+        <TemplateModal 
+          open={isTemplateOpen}
+          onOpenChange={setIsTemplateOpen}
+        />
+        
+        <EvidenceModal 
+          open={isEvidenceOpen}
+          onOpenChange={setIsEvidenceOpen}
         />
       </main>
     </div>
