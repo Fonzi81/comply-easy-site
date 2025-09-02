@@ -1,12 +1,36 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useEffect } from "react";
+import Header from "@/components/Header";
+import Hero from "@/components/Hero";
+import DomainCards from "@/components/DomainCards";
+import HowItWorks from "@/components/HowItWorks";
+import PricingPreview from "@/components/PricingPreview";
+import FAQ from "@/components/FAQ";
+import Footer from "@/components/Footer";
 
 const Index = () => {
+  useEffect(() => {
+    // Update page title and meta description for SEO
+    document.title = "ComplyEasy - Compliance Made Simple for Small Business | Food Safety, WHS, Fire, Test & Tag";
+    
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 
+        'Streamline your small business compliance with ComplyEasy. Preloaded state templates, smart reminders, and one-click audit packs for Food Safety 3.2.2A, WHS, Fire Safety, and Test & Tag compliance.'
+      );
+    }
+  }, []);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen">
+      <Header />
+      <main>
+        <Hero />
+        <DomainCards />
+        <HowItWorks />
+        <PricingPreview />
+        <FAQ />
+      </main>
+      <Footer />
     </div>
   );
 };
