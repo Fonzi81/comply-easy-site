@@ -105,8 +105,12 @@ const Header = () => {
 
           {/* Desktop CTAs */}
           <div className="hidden lg:flex items-center space-x-4">
-            <Button variant="ghost">Log in</Button>
-            <Button>Start free trial</Button>
+            <Link to="/login">
+              <Button variant="ghost">Log in</Button>
+            </Link>
+            <Link to="/login">
+              <Button>Start free trial</Button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -137,8 +141,12 @@ const Header = () => {
               <Link to="/pricing">Pricing</Link>
               <div>Resources</div>
               <div className="pt-4 border-t space-y-2">
-                <Button variant="ghost" className="w-full justify-start">Log in</Button>
-                <Button className="w-full">Start free trial</Button>
+                <Link to="/login" className="w-full">
+                  <Button variant="ghost" className="w-full justify-start">Log in</Button>
+                </Link>
+                <Link to="/login" className="w-full">
+                  <Button className="w-full">Start free trial</Button>
+                </Link>
               </div>
             </div>
           </div>
