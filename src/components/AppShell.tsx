@@ -142,7 +142,8 @@ const AppShell = () => {
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className="w-full justify-between text-carbon-foreground hover:bg-carbon-foreground/10"
+                    className="w-full justify-between hover:bg-carbon-foreground/10"
+                    style={{ color: 'hsl(var(--carbon-foreground))' }}
                   >
                     <div className="flex items-center space-x-2">
                       <Building className="w-4 h-4" />
@@ -169,7 +170,10 @@ const AppShell = () => {
 
             {/* Navigation */}
             <SidebarGroup>
-              <SidebarGroupLabel className="text-carbon-foreground/70">
+              <SidebarGroupLabel 
+                className="text-carbon-foreground/70"
+                style={{ color: 'hsl(var(--carbon-foreground) / 0.7)' }}
+              >
                 Navigation
               </SidebarGroupLabel>
               <SidebarGroupContent>
@@ -179,14 +183,17 @@ const AppShell = () => {
                       <SidebarMenuButton asChild>
                         <Link 
                           to={item.url}
-                          className={`flex items-center space-x-3 ${
+                          className={`flex items-center space-x-3 transition-colors ${
                             isActive(item.url) 
                               ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
-                              : 'text-carbon-foreground hover:bg-carbon-foreground/10'
+                              : 'text-carbon-foreground hover:bg-carbon-foreground/10 hover:text-carbon-foreground'
                           }`}
+                          style={{
+                            color: isActive(item.url) ? 'hsl(var(--primary-foreground))' : 'hsl(var(--carbon-foreground))'
+                          }}
                         >
-                          <item.icon className="w-4 h-4" />
-                          <span>{item.title}</span>
+                          <item.icon className="w-4 h-4" style={{ color: 'inherit' }} />
+                          <span style={{ color: 'inherit' }}>{item.title}</span>
                           {item.badge && (
                             <Badge 
                               variant="secondary" 
