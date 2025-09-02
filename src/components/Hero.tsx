@@ -32,9 +32,7 @@ const Hero = () => {
               </p>
             </div>
 
-            <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-1000 delay-600 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}>
+            <div className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" className="text-lg px-8 py-6 hover-lift group">
                 <span className="group-hover:scale-105 transition-transform duration-200">
                   Start free 14-day trial
