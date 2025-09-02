@@ -109,7 +109,7 @@
 }
 
 @layer components {
-  /* Carbon fiber texture background */
+  /* Carbon fiber texture background with shimmer */
   .carbon-bg {
     background: hsl(var(--carbon));
     background-image:
@@ -118,6 +118,20 @@
     background-size: 16px 16px;
     background-position: 0 0, 8px 8px;
     color: hsl(var(--carbon-foreground));
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .carbon-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.02), transparent);
+    animation: shimmer 3s ease-in-out infinite;
+    pointer-events: none;
   }
   
   /* Smooth transitions */
@@ -132,5 +146,75 @@
   
   .gradient-hero {
     background: linear-gradient(135deg, hsl(var(--carbon)), hsl(var(--carbon) / 0.95));
+  }
+  
+  /* Floating background elements */
+  .floating-bg {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  .floating-bg::before,
+  .floating-bg::after {
+    content: '';
+    position: absolute;
+    background: hsl(var(--primary) / 0.05);
+    border-radius: 50%;
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .floating-bg::before {
+    width: 200px;
+    height: 200px;
+    top: 20%;
+    right: 10%;
+    animation-delay: 0s;
+  }
+  
+  .floating-bg::after {
+    width: 150px;
+    height: 150px;
+    bottom: 30%;
+    left: 5%;
+    animation-delay: 3s;
+  }
+  
+  /* Scroll reveal animations */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .reveal-stagger {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .reveal-stagger.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Enhanced hover states */
+  .hover-lift {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px -10px hsl(var(--primary) / 0.3);
+  }
+  
+  /* Breathing animation for sections */
+  .breathe {
+    animation: breathe 4s ease-in-out infinite;
   }
 }
