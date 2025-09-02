@@ -122,28 +122,27 @@ const AppShell = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
-        <Sidebar className="carbon-bg border-r-0">
+        <Sidebar className="bg-card border-r">
           <SidebarContent>
             {/* Logo */}
-            <div className="p-4 border-b border-carbon-foreground/10">
+            <div className="p-4 border-b border-border">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <Shield className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <span className="font-heading font-bold text-lg text-carbon-foreground">
+                <span className="font-heading font-bold text-lg text-foreground">
                   ComplyEasy
                 </span>
               </div>
             </div>
 
             {/* Site Switcher */}
-            <div className="p-4 border-b border-carbon-foreground/10">
+            <div className="p-4 border-b border-border">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className="w-full justify-between hover:bg-carbon-foreground/10"
-                    style={{ color: 'hsl(var(--carbon-foreground))' }}
+                    className="w-full justify-between text-foreground hover:bg-muted"
                   >
                     <div className="flex items-center space-x-2">
                       <Building className="w-4 h-4" />
@@ -170,10 +169,7 @@ const AppShell = () => {
 
             {/* Navigation */}
             <SidebarGroup>
-              <SidebarGroupLabel 
-                className="text-carbon-foreground/70"
-                style={{ color: 'hsl(var(--carbon-foreground) / 0.7)' }}
-              >
+              <SidebarGroupLabel className="text-muted-foreground">
                 Navigation
               </SidebarGroupLabel>
               <SidebarGroupContent>
@@ -186,14 +182,11 @@ const AppShell = () => {
                           className={`flex items-center space-x-3 transition-colors ${
                             isActive(item.url) 
                               ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
-                              : 'text-carbon-foreground hover:bg-carbon-foreground/10 hover:text-carbon-foreground'
+                              : 'text-foreground hover:bg-muted hover:text-foreground'
                           }`}
-                          style={{
-                            color: isActive(item.url) ? 'hsl(var(--primary-foreground))' : 'hsl(var(--carbon-foreground))'
-                          }}
                         >
-                          <item.icon className="w-4 h-4" style={{ color: 'inherit' }} />
-                          <span style={{ color: 'inherit' }}>{item.title}</span>
+                          <item.icon className="w-4 h-4" />
+                          <span>{item.title}</span>
                           {item.badge && (
                             <Badge 
                               variant="secondary" 
