@@ -163,7 +163,7 @@ END:VEVENT
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Filters & Controls */}
         <div className="space-y-4">
           <Card>
@@ -235,11 +235,11 @@ END:VEVENT
           </Card>
         </div>
 
-        {/* Calendar */}
-        <div className="lg:col-span-2">
-          <Card className="carbon-bg">
+        {/* Calendar - Larger */}
+        <div className="lg:col-span-3">
+          <Card className="h-fit">
             <CardHeader>
-              <CardTitle className="text-carbon-foreground">
+              <CardTitle>
                 {viewMode === 'month' ? 'Monthly View' : 'Weekly View'}
               </CardTitle>
             </CardHeader>
@@ -248,7 +248,29 @@ END:VEVENT
                 mode="single"
                 selected={selectedDate}
                 onSelect={setSelectedDate}
-                className="rounded-md border bg-card"
+                className="rounded-md border bg-card mx-auto scale-110 transform-gpu"
+                classNames={{
+                  months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                  month: "space-y-4 w-full",
+                  caption: "flex justify-center pt-1 relative items-center",
+                  caption_label: "text-lg font-medium",
+                  nav: "space-x-1 flex items-center",
+                  nav_button: "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100",
+                  nav_button_previous: "absolute left-1",
+                  nav_button_next: "absolute right-1",
+                  table: "w-full border-collapse space-y-1",
+                  head_row: "flex",
+                  head_cell: "text-muted-foreground rounded-md w-10 font-normal text-[0.8rem]",
+                  row: "flex w-full mt-2",
+                  cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                  day: "h-10 w-10 p-0 text-sm hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center rounded-md font-normal aria-selected:opacity-100",
+                  day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                  day_today: "bg-accent text-accent-foreground",
+                  day_outside: "text-muted-foreground opacity-50",
+                  day_disabled: "text-muted-foreground opacity-50",
+                  day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                  day_hidden: "invisible",
+                }}
               />
             </CardContent>
           </Card>
@@ -291,7 +313,7 @@ END:VEVENT
                           </div>
                         </div>
                       </SheetTrigger>
-                      <SheetContent>
+                      <SheetContent className="sm:max-w-lg">
                         <SheetHeader>
                           <SheetTitle>{task.title}</SheetTitle>
                           <SheetDescription>
@@ -314,11 +336,25 @@ END:VEVENT
                           </div>
 
                           <div className="space-y-2 pt-4 border-t">
-                            <Button className="w-full" variant="outline">
+                            <Button 
+                              className="w-full" 
+                              variant="outline"
+                              onClick={() => {
+                                // In a real app, this would navigate to task details page
+                                alert("Opening task details...");
+                              }}
+                            >
                               <Eye className="w-4 h-4 mr-2" />
-                              View Details
+                              View Full Details
                             </Button>
-                            <Button className="w-full" variant="outline">
+                            <Button 
+                              className="w-full" 
+                              variant="outline"
+                              onClick={() => {
+                                // In a real app, this would open file upload dialog
+                                alert("Opening evidence upload...");
+                              }}
+                            >
                               <Upload className="w-4 h-4 mr-2" />
                               Upload Evidence
                             </Button>

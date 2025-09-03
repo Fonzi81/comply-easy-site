@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useStaggeredReveal } from "@/hooks/useScrollReveal";
 import foodSafetyIcon from "@/assets/food-safety-icon.jpg";
 import whsIcon from "@/assets/whs-icon.jpg";
@@ -12,24 +13,28 @@ const domains = [
     title: "Food Safety 3.2.2A",
     description: "Training & temperature logs, staff records, ready for inspection.",
     icon: foodSafetyIcon,
+    link: "/product/food-safety-3-2-2a",
     features: ["Temperature monitoring", "Staff training records", "Hazard analysis", "Audit-ready documentation"]
   },
   {
     title: "WHS",
     description: "Incidents, hazards & risk templates with scheduled reviews.",
     icon: whsIcon,
+    link: "/product/whs",
     features: ["Incident reporting", "Risk assessments", "Safety procedures", "Training compliance"]
   },
   {
     title: "Fire Safety",
     description: "Extinguisher service, evacuation drills & occupier statements.",
     icon: fireSafetyIcon,
+    link: "/product/fire-safety",
     features: ["Equipment maintenance", "Evacuation procedures", "Fire warden training", "Emergency planning"]
   },
   {
     title: "Test & Tag",
     description: "AS/NZS 3760 intervals preloaded — never miss a retest.",
     icon: testTagIcon,
+    link: "/product/test-and-tag",
     features: ["Automated scheduling", "Compliance tracking", "Test certificates", "Equipment registers"]
   }
 ];
@@ -91,15 +96,17 @@ const DomainCards = () => {
                     </li>
                   ))}
                 </ul>
-                <Button 
-                  variant="ghost" 
-                  className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 hover-lift"
-                >
-                  <span className="group-hover:scale-105 transition-transform duration-200">
-                    Learn more
-                  </span>
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
-                </Button>
+                <Link to={domain.link}>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 hover-lift"
+                  >
+                    <span className="group-hover:scale-105 transition-transform duration-200">
+                      Learn more
+                    </span>
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           ))}

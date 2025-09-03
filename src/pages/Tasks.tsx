@@ -24,8 +24,11 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  Filter
+  Filter,
+  Eye
 } from "lucide-react";
+import TaskDetailModal from "@/components/TaskDetailModal";
+import { useToast } from "@/hooks/use-toast";
 
 interface ComplianceTask {
   id: string;
@@ -35,6 +38,9 @@ interface ComplianceTask {
   status: 'Due' | 'Overdue' | 'Completed';
   evidenceAttached: boolean;
   assignedTo: string;
+  description?: string;
+  priority?: 'High' | 'Medium' | 'Low';
+  notes?: string;
 }
 
 const Tasks = () => {
@@ -43,9 +49,12 @@ const Tasks = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTask, setSelectedTask] = useState<ComplianceTask | null>(null);
+  const [taskDetailOpen, setTaskDetailOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Sample task data
+    // Sample task data with enhanced details
     const sampleTasks: ComplianceTask[] = [
       {
         id: '1',
@@ -54,7 +63,10 @@ const Tasks = () => {
         dueDate: '2024-01-15',
         status: 'Due',
         evidenceAttached: false,
-        assignedTo: 'John Smith'
+        assignedTo: 'John Smith',
+        description: 'Review and verify all temperature logs for refrigeration units. Ensure all readings are within safe ranges and document any anomalies.',
+        priority: 'High',
+        notes: ''
       },
       {
         id: '2',
@@ -63,7 +75,10 @@ const Tasks = () => {
         dueDate: '2024-01-10',
         status: 'Overdue',
         evidenceAttached: true,
-        assignedTo: 'Sarah Johnson'
+        assignedTo: 'Sarah Johnson',
+        description: 'Monthly inspection of all fire extinguishers. Check pressure gauges, safety pins, and overall condition. Update maintenance tags.',
+        priority: 'High',
+        notes: 'Extinguisher in kitchen needs pressure check'
       },
       {
         id: '3',
@@ -72,7 +87,10 @@ const Tasks = () => {
         dueDate: '2024-01-20',
         status: 'Due',
         evidenceAttached: false,
-        assignedTo: 'Mike Wilson'
+        assignedTo: 'Mike Wilson',
+        description: 'Quarterly workplace health and safety training session for all staff members. Cover emergency procedures and hazard identification.',
+        priority: 'Medium',
+        notes: ''
       },
       {
         id: '4',
@@ -81,7 +99,10 @@ const Tasks = () => {
         dueDate: '2024-01-05',
         status: 'Completed',
         evidenceAttached: true,
-        assignedTo: 'Lisa Brown'
+        assignedTo: 'Lisa Brown',
+        description: 'Portable appliance testing for all electrical equipment as per AS/NZS 3760 standards.',
+        priority: 'Medium',
+        notes: 'All equipment passed testing'
       },
       {
         id: '5',
@@ -90,7 +111,10 @@ const Tasks = () => {
         dueDate: '2024-01-08',
         status: 'Overdue',
         evidenceAttached: false,
-        assignedTo: 'John Smith'
+        assignedTo: 'John Smith',
+        description: 'Comprehensive food safety audit covering all kitchen areas, storage facilities, and food handling procedures.',
+        priority: 'High',
+        notes: 'Need to schedule with external auditor'
       }
     ];
     setTasks(sampleTasks);
@@ -165,6 +189,39 @@ const Tasks = () => {
         task.id === taskId ? { ...task, status: 'Completed' as const } : task
       )
     );
+    toast({
+      title: "Task completed",
+      description: "The task has been marked as complete.",
+    });
+  };
+
+  const handleUploadEvidence = (taskId: string) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === taskId ? { ...task, evidenceAttached: true } : task
+      )
+    );
+    toast({
+      title: "Evidence uploaded",
+      description: "Evidence has been attached to the task.",
+    });
+  };
+
+  const handleUpdateNotes = (taskId: string, notes: string) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === taskId ? { ...task, notes } : task
+      )
+    );
+    toast({
+      title: "Notes updated",
+      description: "Task notes have been saved.",
+    });
+  };
+
+  const handleTaskClick = (task: ComplianceTask) => {
+    setSelectedTask(task);
+    setTaskDetailOpen(true);
   };
 
   const isOverdue = (task: ComplianceTask) => {
@@ -279,15 +336,23 @@ const Tasks = () => {
                 {filteredTasks.map((task) => (
                   <TableRow 
                     key={task.id}
-                    className={`${
+                    className={`cursor-pointer ${
                       task.status === 'Overdue' 
                         ? isOverdue(task)
                           ? 'bg-destructive/20 hover:bg-destructive/30' // Critical overdue
                           : 'bg-accent/20 hover:bg-accent/30' // Regular overdue
-                        : ''
+                        : 'hover:bg-muted/50'
                     }`}
+                    onClick={() => handleTaskClick(task)}
                   >
-                    <TableCell className="font-medium">{task.title}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center space-x-2">
+                        <span>{task.title}</span>
+                        {task.priority === 'High' && (
+                          <Badge variant="destructive" className="text-xs">High</Badge>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <Badge 
                         variant="outline" 
@@ -315,17 +380,38 @@ const Tasks = () => {
                     <TableCell>{task.assignedTo}</TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleTaskClick(task);
+                          }}
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          View
+                        </Button>
                         {task.status !== 'Completed' && (
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => markComplete(task.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              markComplete(task.id);
+                            }}
                           >
                             <CheckSquare className="w-4 h-4 mr-1" />
                             Complete
                           </Button>
                         )}
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUploadEvidence(task.id);
+                          }}
+                        >
                           <Upload className="w-4 h-4 mr-1" />
                           Evidence
                         </Button>
@@ -338,6 +424,15 @@ const Tasks = () => {
           </div>
         </CardContent>
       </Card>
+
+      <TaskDetailModal
+        task={selectedTask}
+        open={taskDetailOpen}
+        onOpenChange={setTaskDetailOpen}
+        onMarkComplete={markComplete}
+        onUploadEvidence={handleUploadEvidence}
+        onUpdateNotes={handleUpdateNotes}
+      />
     </div>
   );
 };

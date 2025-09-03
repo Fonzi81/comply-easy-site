@@ -32,24 +32,46 @@ const Header = () => {
                 <NavigationMenuTrigger>Product</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="grid w-[400px] gap-3 p-4">
-                    <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                      <div className="text-sm font-medium leading-none">Overview</div>
-                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        Complete compliance management platform
-                      </p>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                      <div className="text-sm font-medium leading-none">Food Safety 3.2.2A</div>
-                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        Training & temperature logs, staff records
-                      </p>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                      <div className="text-sm font-medium leading-none">WHS</div>
-                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        Incidents, hazards & risk templates
-                      </p>
-                    </NavigationMenuLink>
+                    <Link to="/product/overview">
+                      <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                        <div className="text-sm font-medium leading-none">Overview</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          Complete compliance management platform
+                        </p>
+                      </NavigationMenuLink>
+                    </Link>
+                    <Link to="/product/food-safety-3-2-2a">
+                      <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                        <div className="text-sm font-medium leading-none">Food Safety 3.2.2A</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          Training & temperature logs, staff records
+                        </p>
+                      </NavigationMenuLink>
+                    </Link>
+                    <Link to="/product/whs">
+                      <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                        <div className="text-sm font-medium leading-none">WHS</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          Incidents, hazards & risk templates
+                        </p>
+                      </NavigationMenuLink>
+                    </Link>
+                    <Link to="/product/fire-safety">
+                      <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                        <div className="text-sm font-medium leading-none">Fire Safety</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          Extinguisher service & evacuation plans
+                        </p>
+                      </NavigationMenuLink>
+                    </Link>
+                    <Link to="/product/test-and-tag">
+                      <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                        <div className="text-sm font-medium leading-none">Test & Tag</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          AS/NZS 3760 intervals preloaded
+                        </p>
+                      </NavigationMenuLink>
+                    </Link>
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -58,16 +80,28 @@ const Header = () => {
                 <NavigationMenuTrigger>Templates</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="grid w-[300px] gap-3 p-4">
-                    {["QLD", "NSW", "VIC", "WA"].map((state) => (
-                      <NavigationMenuLink
-                        key={state}
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                      >
-                        <div className="text-sm font-medium leading-none">{state} Pack</div>
+                    <Link to="/templates/state-packs">
+                      <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                        <div className="text-sm font-medium leading-none">All State Packs</div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          State-specific compliance templates
+                          Choose your state-specific pack
                         </p>
                       </NavigationMenuLink>
+                    </Link>
+                    {[
+                      { code: "QLD", path: "/templates/qld" },
+                      { code: "NSW", path: "/templates/nsw" },
+                      { code: "VIC", path: "/templates/vic" },
+                      { code: "WA", path: "/templates/wa" }
+                    ].map((state) => (
+                      <Link key={state.code} to={state.path}>
+                        <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                          <div className="text-sm font-medium leading-none">{state.code} Pack</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            State-specific compliance templates
+                          </p>
+                        </NavigationMenuLink>
+                      </Link>
                     ))}
                   </div>
                 </NavigationMenuContent>
@@ -85,18 +119,30 @@ const Header = () => {
                 <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="grid w-[300px] gap-3 p-4">
-                    <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                      <div className="text-sm font-medium leading-none">Blog</div>
-                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        Latest compliance insights
-                      </p>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                      <div className="text-sm font-medium leading-none">Compliance Calendar</div>
-                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        2025 state-specific calendars
-                      </p>
-                    </NavigationMenuLink>
+                    <Link to="/resources">
+                      <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                        <div className="text-sm font-medium leading-none">Resources</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          Guides, templates & tools
+                        </p>
+                      </NavigationMenuLink>
+                    </Link>
+                    <Link to="/calendar">
+                      <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                        <div className="text-sm font-medium leading-none">Compliance Calendar</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          2025 state-specific calendars
+                        </p>
+                      </NavigationMenuLink>
+                    </Link>
+                    <Link to="/partners">
+                      <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                        <div className="text-sm font-medium leading-none">Partners</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          Integration partners & support
+                        </p>
+                      </NavigationMenuLink>
+                    </Link>
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -131,15 +177,15 @@ const Header = () => {
               <div className="space-y-2">
                 <div className="font-medium">Product</div>
                 <div className="pl-4 space-y-1 text-sm text-muted-foreground">
-                  <div>Overview</div>
-                  <div>Food Safety 3.2.2A</div>
-                  <div>WHS</div>
-                  <div>Fire Safety</div>
-                  <div>Test & Tag</div>
+                  <Link to="/product/overview">Overview</Link>
+                  <Link to="/product/food-safety-3-2-2a">Food Safety 3.2.2A</Link>
+                  <Link to="/product/whs">WHS</Link>
+                  <Link to="/product/fire-safety">Fire Safety</Link>
+                  <Link to="/product/test-and-tag">Test & Tag</Link>
                 </div>
               </div>
               <Link to="/pricing">Pricing</Link>
-              <div>Resources</div>
+              <Link to="/resources">Resources</Link>
               <div className="pt-4 border-t space-y-2">
                 <Link to="/login" className="w-full">
                   <Button variant="ghost" className="w-full justify-start">Log in</Button>
