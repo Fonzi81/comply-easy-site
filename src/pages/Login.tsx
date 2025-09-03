@@ -209,10 +209,6 @@ const Login = () => {
         <p className="text-center text-carbon-foreground/60 text-sm mt-6">
           Need help? Contact support at help@complyeasy.com
         </p>
-        
-        <p className="text-center text-carbon-foreground/60 text-xs mt-4">
-          Setting up for the first time? <Link to="/admin-setup" className="text-primary hover:underline">Create admin account</Link>
-        </p>
       </div>
     </div>
   );

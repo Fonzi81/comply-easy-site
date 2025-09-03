@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +31,9 @@ import {
 } from "lucide-react";
 
 const Settings = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  
   const [apiKey, setApiKey] = useState("sk_live_••••••••••••••••••••••••••••");
   const [webhookUrl, setWebhookUrl] = useState("");
   const [notifications, setNotifications] = useState({
@@ -36,6 +42,93 @@ const Settings = () => {
     push: true,
     digestFrequency: "daily"
   });
+
+  // Profile state
+  const [profile, setProfile] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    company: ""
+  });
+  const [loading, setLoading] = useState(false);
+
+  // Load user profile data
+  useEffect(() => {
+    if (user) {
+      loadProfile();
+    }
+  }, [user]);
+
+  const loadProfile = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('first_name, last_name, email, phone')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error loading profile:', error);
+        return;
+      }
+
+      if (data) {
+        setProfile({
+          firstName: data.first_name || "",
+          lastName: data.last_name || "",
+          email: data.email || user.email || "",
+          phone: data.phone || "",
+          company: "" // Add this to profiles table if needed
+        });
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    }
+  };
+
+  const saveProfile = async () => {
+    if (!user) return;
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          user_id: user.id,
+          first_name: profile.firstName,
+          last_name: profile.lastName,
+          email: profile.email,
+          phone: profile.phone,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to save profile changes",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      toast({
+        title: "Error", 
+        description: "Failed to save profile changes",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const generateApiKey = () => {
     const newKey = `sk_live_${Math.random().toString(36).substr(2, 32)}`;
@@ -85,32 +178,56 @@ const Settings = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" defaultValue="Andrew" />
+                  <Input 
+                    id="firstName" 
+                    value={profile.firstName}
+                    onChange={(e) => setProfile(prev => ({ ...prev, firstName: e.target.value }))}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" defaultValue="Smith" />
+                  <Input 
+                    id="lastName" 
+                    value={profile.lastName}
+                    onChange={(e) => setProfile(prev => ({ ...prev, lastName: e.target.value }))}
+                  />
                 </div>
               </div>
               
               <div>
                 <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" defaultValue="andrew@example.com" />
+                <Input 
+                  id="email" 
+                  type="email" 
+                  value={profile.email}
+                  onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
+                />
               </div>
               
               <div>
                 <Label htmlFor="phone">Phone Number</Label>
-                <Input id="phone" type="tel" defaultValue="+61 400 000 000" />
+                <Input 
+                  id="phone" 
+                  type="tel" 
+                  value={profile.phone}
+                  onChange={(e) => setProfile(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder="+61 400 000 000"
+                />
               </div>
               
               <div>
                 <Label htmlFor="company">Company</Label>
-                <Input id="company" defaultValue="ComplyEasy Demo" />
+                <Input 
+                  id="company" 
+                  value={profile.company}
+                  onChange={(e) => setProfile(prev => ({ ...prev, company: e.target.value }))}
+                  placeholder="Your company name"
+                />
               </div>
 
-              <Button>
+              <Button onClick={saveProfile} disabled={loading}>
                 <Save className="w-4 h-4 mr-2" />
-                Save Changes
+                {loading ? "Saving..." : "Save Changes"}
               </Button>
             </CardContent>
           </Card>
