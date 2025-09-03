@@ -10,14 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Save, X, Shield } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-
-interface UserProfile {
-  id: string;
-  full_name?: string;
-  role: 'admin' | 'user';
-  created_at: string;
-  updated_at: string;
-}
+import { UserProfile } from "@/types/user";
 
 interface UserEditModalProps {
   user: UserProfile | null;
@@ -80,7 +73,7 @@ export const UserEditModal = ({ user, open, onOpenChange, onUserUpdated }: UserE
     }
   };
 
-  const getInitials = (fullName: string | undefined) => {
+  const getInitials = (fullName: string | null | undefined) => {
     if (fullName && fullName.trim()) {
       const names = fullName.trim().split(' ');
       if (names.length >= 2) {

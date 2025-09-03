@@ -8,15 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Users, Search, UserPlus, Shield } from "lucide-react";
 import { UserEditModal } from "@/components/UserEditModal";
 import { UserList } from "@/components/UserList";
-
-// Local interface to avoid conflicts with auto-generated types
-interface UserProfile {
-  id: string;
-  full_name?: string;
-  role: 'admin' | 'user';
-  created_at: string;
-  updated_at: string;
-}
+import { UserProfile } from "@/types/user";
 
 const UserManagement = () => {
   const { user } = useAuth();
@@ -62,8 +54,8 @@ const UserManagement = () => {
         throw error;
       }
 
-      // Cast to our local interface to work around type generation delays
-      const typedUsers = (profiles || []) as UserProfile[];
+      // Type assertion to work around auto-generated type conflicts
+      const typedUsers = (profiles || []) as unknown as UserProfile[];
       setUsers(typedUsers);
     } catch (error) {
       console.error('Error loading users:', error);

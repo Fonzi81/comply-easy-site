@@ -4,15 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Pencil, Shield, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-
-// Local interface to avoid type conflicts during migration
-interface UserProfile {
-  id: string;
-  full_name?: string;
-  role: 'admin' | 'user';
-  created_at: string;
-  updated_at: string;
-}
+import { UserProfile } from "@/types/user";
 
 interface UserListProps {
   users: UserProfile[];
