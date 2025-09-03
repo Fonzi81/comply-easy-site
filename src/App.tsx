@@ -19,6 +19,13 @@ import WHS from "./pages/WHS";
 import FireSafety from "./pages/FireSafety";
 import TestTag from "./pages/TestTag";
 import StatePacks from "./pages/StatePacks";
+import StatePackQLD from "./pages/StatePackQLD";
+import StatePackNSW from "./pages/StatePackNSW";
+import StatePackVIC from "./pages/StatePackVIC";
+import StatePackWA from "./pages/StatePackWA";
+import Resources from "./pages/Resources";
+import Partners from "./pages/Partners";
+import Security from "./pages/Security";
 import NotFound from "./pages/NotFound";
 import AppShell from "./components/AppShell";
 import AdminSetup from "./pages/AdminSetup";
@@ -67,6 +74,13 @@ const App = () => {
               <Route path="/product/fire-safety" element={<FireSafety />} />
               <Route path="/product/test-and-tag" element={<TestTag />} />
               <Route path="/templates/state-packs" element={<StatePacks />} />
+              <Route path="/templates/qld" element={<StatePackQLD />} />
+              <Route path="/templates/nsw" element={<StatePackNSW />} />
+              <Route path="/templates/vic" element={<StatePackVIC />} />
+              <Route path="/templates/wa" element={<StatePackWA />} />
+              <Route path="/resources" element={<Resources />} />
+              <Route path="/partners" element={<Partners />} />
+              <Route path="/security" element={<Security />} />
               
               {/* Protected app routes */}
               <Route path="/dashboard" element={
