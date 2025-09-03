@@ -362,11 +362,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_profile_with_role: {
+        Args: { _user_id: string }
+        Returns: {
+          avatar_url: string
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          phone: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_current_user_admin: {
+        Args: Record<PropertyKey, never>
         Returns: boolean
       }
       is_organization_member: {

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, Outlet, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -36,7 +37,8 @@ import {
   User,
   LogOut,
   Building,
-  Menu
+  Menu,
+  UserCog
 } from "lucide-react";
 
 
@@ -49,8 +51,28 @@ interface NavItem {
 
 const AppShell = () => {
   const [currentSite, setCurrentSite] = useState("Main Site");
+  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
   const { user, signOut } = useAuth();
+
+  useEffect(() => {
+    checkAdminStatus();
+  }, [user]);
+
+  const checkAdminStatus = async () => {
+    if (!user) return;
+    
+    try {
+      const { data: roles } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id);
+      
+      setIsAdmin(roles?.some(r => r.role === 'admin') || false);
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+    }
+  };
 
   const navItems: NavItem[] = [
     {
@@ -88,6 +110,14 @@ const AppShell = () => {
       title: "Settings",
       url: "/settings",
       icon: Settings,
+    },
+  ];
+
+  const adminNavItems: NavItem[] = [
+    {
+      title: "User Management",
+      url: "/admin/users",
+      icon: UserCog,
     },
   ];
 
@@ -186,6 +216,36 @@ const AppShell = () => {
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
+
+            {/* Admin Navigation */}
+            {isAdmin && (
+              <SidebarGroup>
+                <SidebarGroupLabel className="text-muted-foreground">
+                  Administration
+                </SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {adminNavItems.map((item) => (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton asChild>
+                          <Link 
+                            to={item.url}
+                            className={`flex items-center space-x-3 transition-colors ${
+                              isActive(item.url) 
+                                ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
+                                : 'text-foreground hover:bg-muted hover:text-foreground'
+                            }`}
+                          >
+                            <item.icon className="w-4 h-4" />
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            )}
           </SidebarContent>
         </Sidebar>
 
