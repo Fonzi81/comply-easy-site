@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation, Outlet, Link } from "react-router-dom";
+import { useState } from "react";
+import { useLocation, Outlet, Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -38,12 +39,6 @@ import {
   Menu
 } from "lucide-react";
 
-interface User {
-  username: string;
-  name: string;
-  role: string;
-  loginTime: string;
-}
 
 interface NavItem {
   title: string;
@@ -53,10 +48,9 @@ interface NavItem {
 }
 
 const AppShell = () => {
-  const [user, setUser] = useState<User | null>(null);
   const [currentSite, setCurrentSite] = useState("Main Site");
-  const navigate = useNavigate();
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   const navItems: NavItem[] = [
     {
@@ -99,18 +93,8 @@ const AppShell = () => {
 
   const sites = ["Main Site", "Cafe North", "Cafe South", "Childcare Centre"];
 
-  useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (!userData) {
-      navigate('/login');
-      return;
-    }
-    setUser(JSON.parse(userData));
-  }, [navigate]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    navigate('/login');
+  const handleLogout = async () => {
+    await signOut();
   };
 
   const isActive = (path: string) => location.pathname === path;
@@ -226,8 +210,10 @@ const AppShell = () => {
                         <User className="w-4 h-4 text-primary-foreground" />
                       </div>
                       <div className="hidden md:block text-left">
-                        <p className="font-medium">{user.name}</p>
-                        <p className="text-xs text-muted-foreground capitalize">{user.role}</p>
+                        <p className="font-medium">
+                          {user?.user_metadata?.first_name || user?.email?.split('@')[0]}
+                        </p>
+                        <p className="text-xs text-muted-foreground">User</p>
                       </div>
                       <ChevronDown className="w-4 h-4" />
                     </Button>
