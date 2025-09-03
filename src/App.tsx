@@ -23,6 +23,7 @@ import StatePacks from "./pages/StatePacks";
 import NotFound from "./pages/NotFound";
 import AppShell from "./components/AppShell";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminSetup from "./pages/AdminSetup";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/admin-setup" element={<AdminSetup />} />
               <Route path="/product/overview" element={<ProductOverview />} />
               <Route path="/product/food-safety-3-2-2a" element={<FoodSafety />} />
               <Route path="/product/whs" element={<WHS />} />
