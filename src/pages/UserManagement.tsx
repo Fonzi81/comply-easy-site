@@ -4,23 +4,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Search, UserPlus, Shield, Eye, Pencil, Trash2 } from "lucide-react";
+import { Users, Search, UserPlus, Shield } from "lucide-react";
 import { UserEditModal } from "@/components/UserEditModal";
 import { UserList } from "@/components/UserList";
 
+// Local interface to avoid conflicts with auto-generated types
 interface UserProfile {
   id: string;
-  user_id: string;
-  first_name: string | null;
-  last_name: string | null;
-  email: string | null;
-  phone: string | null;
-  avatar_url: string | null;
+  full_name?: string;
+  role: 'admin' | 'user';
   created_at: string;
   updated_at: string;
-  role: 'admin' | 'manager' | 'user';
 }
 
 const UserManagement = () => {
@@ -42,12 +37,13 @@ const UserManagement = () => {
     if (!user) return;
     
     try {
-      const { data: roles } = await supabase
-        .from('user_roles')
+      const { data: profile } = await supabase
+        .from('profiles')
         .select('role')
-        .eq('user_id', user.id);
+        .eq('id', user.id)
+        .single();
       
-      setIsAdmin(roles?.some(r => r.role === 'admin') || false);
+      setIsAdmin(profile?.role === 'admin' || false);
     } catch (error) {
       console.error('Error checking admin status:', error);
     }
@@ -57,7 +53,6 @@ const UserManagement = () => {
     try {
       setLoading(true);
       
-      // Get all profiles with roles (now stored directly in profiles table)
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('*')
@@ -67,13 +62,9 @@ const UserManagement = () => {
         throw error;
       }
 
-      // Filter and normalize roles to match our interface
-      const normalizedUsers = (profiles || []).map(profile => ({
-        ...profile,
-        role: profile.role === 'manager' ? 'user' : profile.role
-      })).filter(profile => ['admin', 'user'].includes(profile.role));
-
-      setUsers(normalizedUsers);
+      // Cast to our local interface to work around type generation delays
+      const typedUsers = (profiles || []) as UserProfile[];
+      setUsers(typedUsers);
     } catch (error) {
       console.error('Error loading users:', error);
       toast({
@@ -99,11 +90,9 @@ const UserManagement = () => {
 
   const filteredUsers = users.filter(user => {
     const searchLower = searchTerm.toLowerCase();
-    const fullName = `${user.first_name || ''} ${user.last_name || ''}`.toLowerCase();
-    const email = user.email?.toLowerCase() || '';
+    const fullName = user.full_name?.toLowerCase() || '';
     
     return fullName.includes(searchLower) || 
-           email.includes(searchLower) ||
            user.role.toLowerCase().includes(searchLower);
   });
 
@@ -185,7 +174,7 @@ const UserManagement = () => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search users by name, email, or role..."
+                placeholder="Search users by name or role..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"

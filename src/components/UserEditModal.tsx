@@ -4,24 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { User, Mail, Phone, Shield, Save, X } from "lucide-react";
+import { User, Save, X, Shield } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface UserProfile {
   id: string;
-  user_id: string;
-  first_name: string | null;
-  last_name: string | null;
-  email: string | null;
-  phone: string | null;
-  avatar_url: string | null;
+  full_name?: string;
+  role: 'admin' | 'user';
   created_at: string;
   updated_at: string;
-  role: 'admin' | 'manager' | 'user';
 }
 
 interface UserEditModalProps {
@@ -35,20 +30,14 @@ export const UserEditModal = ({ user, open, onOpenChange, onUserUpdated }: UserE
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    phone: '',
-    role: 'user' as 'admin' | 'manager' | 'user'
+    full_name: '',
+    role: 'user' as 'admin' | 'user'
   });
 
   useEffect(() => {
     if (user) {
       setFormData({
-        first_name: user.first_name || '',
-        last_name: user.last_name || '',
-        email: user.email || '',
-        phone: user.phone || '',
+        full_name: user.full_name || '',
         role: user.role
       });
     }
@@ -60,41 +49,17 @@ export const UserEditModal = ({ user, open, onOpenChange, onUserUpdated }: UserE
     try {
       setLoading(true);
 
-      // Update profile
-      const { error: profileError } = await supabase
+      const { error } = await supabase
         .from('profiles')
         .update({
-          first_name: formData.first_name || null,
-          last_name: formData.last_name || null,
-          email: formData.email || null,
-          phone: formData.phone || null,
+          full_name: formData.full_name || null,
+          role: formData.role,
           updated_at: new Date().toISOString()
         })
-        .eq('user_id', user.user_id);
+        .eq('id', user.id);
 
-      if (profileError) {
-        throw profileError;
-      }
-
-      // Update role if changed (only allow non-admin role changes)
-      if (formData.role !== user.role && user.role !== 'admin' && formData.role !== 'admin') {
-        // Delete existing role
-        await supabase
-          .from('user_roles')
-          .delete()
-          .eq('user_id', user.user_id);
-
-        // Insert new role
-        const { error: roleError } = await supabase
-          .from('user_roles')
-          .insert({
-            user_id: user.user_id,
-            role: formData.role
-          });
-
-        if (roleError) {
-          throw roleError;
-        }
+      if (error) {
+        throw error;
       }
 
       toast({
@@ -115,12 +80,13 @@ export const UserEditModal = ({ user, open, onOpenChange, onUserUpdated }: UserE
     }
   };
 
-  const getInitials = (firstName: string, lastName: string, email: string) => {
-    if (firstName && lastName) {
-      return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-    }
-    if (email) {
-      return email.charAt(0).toUpperCase();
+  const getInitials = (fullName: string | undefined) => {
+    if (fullName && fullName.trim()) {
+      const names = fullName.trim().split(' ');
+      if (names.length >= 2) {
+        return `${names[0].charAt(0)}${names[names.length - 1].charAt(0)}`.toUpperCase();
+      }
+      return fullName.charAt(0).toUpperCase();
     }
     return 'U';
   };
@@ -134,7 +100,7 @@ export const UserEditModal = ({ user, open, onOpenChange, onUserUpdated }: UserE
           <DialogTitle className="flex items-center space-x-3">
             <Avatar className="h-10 w-10">
               <AvatarFallback className="bg-primary text-primary-foreground">
-                {getInitials(user.full_name || '')}
+                {getInitials(user.full_name)}
               </AvatarFallback>
             </Avatar>
             <div>

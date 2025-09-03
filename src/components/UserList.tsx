@@ -1,21 +1,17 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Pencil, Shield, User, Mail, Phone } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Pencil, Shield, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
+// Local interface to avoid type conflicts during migration
 interface UserProfile {
   id: string;
-  user_id: string;
-  first_name: string | null;
-  last_name: string | null;
-  email: string | null;
-  phone: string | null;
-  avatar_url: string | null;
+  full_name?: string;
+  role: 'admin' | 'user';
   created_at: string;
   updated_at: string;
-  role: 'admin' | 'manager' | 'user';
 }
 
 interface UserListProps {
@@ -25,12 +21,13 @@ interface UserListProps {
 }
 
 export const UserList = ({ users, loading, onEditUser }: UserListProps) => {
-  const getInitials = (firstName: string | null, lastName: string | null, email: string | null) => {
-    if (firstName && lastName) {
-      return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-    }
-    if (email) {
-      return email.charAt(0).toUpperCase();
+  const getInitials = (fullName: string | null | undefined) => {
+    if (fullName && fullName.trim()) {
+      const names = fullName.trim().split(' ');
+      if (names.length >= 2) {
+        return `${names[0].charAt(0)}${names[names.length - 1].charAt(0)}`.toUpperCase();
+      }
+      return fullName.charAt(0).toUpperCase();
     }
     return 'U';
   };
@@ -39,8 +36,6 @@ export const UserList = ({ users, loading, onEditUser }: UserListProps) => {
     switch (role) {
       case 'admin':
         return 'bg-destructive text-destructive-foreground';
-      case 'manager':
-        return 'bg-accent text-accent-foreground';
       case 'user':
         return 'bg-secondary text-secondary-foreground';
       default:

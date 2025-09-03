@@ -70,7 +70,7 @@ const Settings = () => {
         .eq('id', user.id)
         .single();
 
-      if (error) {
+      if (error && error.code !== 'PGRST116') {
         console.error('Error loading profile:', error);
         return;
       }
@@ -80,6 +80,15 @@ const Settings = () => {
         setProfile({
           firstName: names[0] || "",
           lastName: names.slice(1).join(' ') || "",
+          email: user.email || "",
+          phone: "",
+          company: ""
+        });
+      } else {
+        // Profile doesn't exist yet, use default values
+        setProfile({
+          firstName: "",
+          lastName: "",
           email: user.email || "",
           phone: "",
           company: ""
@@ -96,13 +105,17 @@ const Settings = () => {
     setLoading(true);
     try {
       const fullName = `${profile.firstName} ${profile.lastName}`.trim();
+      
+      // Use upsert to handle both insert and update cases
       const { error } = await supabase
         .from('profiles')
-        .update({
+        .upsert({
+          id: user.id,
           full_name: fullName || null,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
+        }, {
+          onConflict: 'id'
+        });
 
       if (error) {
         toast({
