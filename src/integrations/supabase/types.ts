@@ -302,37 +302,25 @@ export type Database = {
       }
       profiles: {
         Row: {
-          avatar_url: string | null
-          created_at: string | null
-          email: string | null
-          first_name: string | null
+          created_at: string
+          full_name: string | null
           id: string
-          last_name: string | null
-          phone: string | null
-          updated_at: string | null
-          user_id: string
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at: string
         }
         Insert: {
-          avatar_url?: string | null
-          created_at?: string | null
-          email?: string | null
-          first_name?: string | null
-          id?: string
-          last_name?: string | null
-          phone?: string | null
-          updated_at?: string | null
-          user_id: string
+          created_at?: string
+          full_name?: string | null
+          id: string
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
         }
         Update: {
-          avatar_url?: string | null
-          created_at?: string | null
-          email?: string | null
-          first_name?: string | null
+          created_at?: string
+          full_name?: string | null
           id?: string
-          last_name?: string | null
-          phone?: string | null
-          updated_at?: string | null
-          user_id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
         }
         Relationships: []
       }
@@ -398,6 +386,7 @@ export type Database = {
       compliance_category: "food_safety" | "whs" | "fire_safety" | "test_tag"
       evidence_type: "document" | "image" | "video" | "other"
       task_status: "pending" | "in_progress" | "completed" | "overdue"
+      user_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -529,6 +518,7 @@ export const Constants = {
       compliance_category: ["food_safety", "whs", "fire_safety", "test_tag"],
       evidence_type: ["document", "image", "video", "other"],
       task_status: ["pending", "in_progress", "completed", "overdue"],
+      user_role: ["admin", "user"],
     },
   },
 } as const
