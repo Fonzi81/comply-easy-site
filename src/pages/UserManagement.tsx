@@ -57,35 +57,23 @@ const UserManagement = () => {
     try {
       setLoading(true);
       
-      // Get all profiles with their roles
-      const { data: profiles, error: profilesError } = await supabase
+      // Get all profiles with roles (now stored directly in profiles table)
+      const { data: profiles, error } = await supabase
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (profilesError) {
-        throw profilesError;
+      if (error) {
+        throw error;
       }
 
-      // Get all user roles
-      const { data: roles, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('user_id, role');
+      // Filter and normalize roles to match our interface
+      const normalizedUsers = (profiles || []).map(profile => ({
+        ...profile,
+        role: profile.role === 'manager' ? 'user' : profile.role
+      })).filter(profile => ['admin', 'user'].includes(profile.role));
 
-      if (rolesError) {
-        throw rolesError;
-      }
-
-      // Combine profiles with roles
-      const usersWithRoles: UserProfile[] = profiles?.map(profile => {
-        const userRole = roles?.find(r => r.user_id === profile.user_id);
-        return {
-          ...profile,
-          role: userRole?.role || 'user'
-        };
-      }) || [];
-
-      setUsers(usersWithRoles);
+      setUsers(normalizedUsers);
     } catch (error) {
       console.error('Error loading users:', error);
       toast({

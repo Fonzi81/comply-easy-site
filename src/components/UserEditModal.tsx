@@ -133,15 +133,14 @@ export const UserEditModal = ({ user, open, onOpenChange, onUserUpdated }: UserE
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={user.avatar_url || undefined} />
               <AvatarFallback className="bg-primary text-primary-foreground">
-                {getInitials(formData.first_name, formData.last_name, formData.email)}
+                {getInitials(user.full_name || '')}
               </AvatarFallback>
             </Avatar>
             <div>
               <span>Edit User</span>
               <div className="text-sm text-muted-foreground font-normal">
-                ID: {user.user_id.slice(0, 8)}...
+                ID: {user.id.slice(0, 8)}...
               </div>
             </div>
           </DialogTitle>
@@ -164,54 +163,14 @@ export const UserEditModal = ({ user, open, onOpenChange, onUserUpdated }: UserE
           </div>
 
           {/* Form Fields */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="first_name">First Name</Label>
-              <Input
-                id="first_name"
-                value={formData.first_name}
-                onChange={(e) => setFormData(prev => ({ ...prev, first_name: e.target.value }))}
-                placeholder="Enter first name"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="last_name">Last Name</Label>
-              <Input
-                id="last_name"
-                value={formData.last_name}
-                onChange={(e) => setFormData(prev => ({ ...prev, last_name: e.target.value }))}
-                placeholder="Enter last name"
-              />
-            </div>
-          </div>
-
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="Enter email address"
-                className="pl-10"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="phone"
-                value={formData.phone}
-                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                placeholder="Enter phone number"
-                className="pl-10"
-              />
-            </div>
+            <Label htmlFor="full_name">Full Name</Label>
+            <Input
+              id="full_name"
+              value={formData.full_name}
+              onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
+              placeholder="Enter full name"
+            />
           </div>
 
           <div className="space-y-2">
@@ -227,7 +186,7 @@ export const UserEditModal = ({ user, open, onOpenChange, onUserUpdated }: UserE
             ) : (
               <Select 
                 value={formData.role} 
-                onValueChange={(value: 'manager' | 'user') => setFormData(prev => ({ ...prev, role: value }))}
+                onValueChange={(value: 'user') => setFormData(prev => ({ ...prev, role: value }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select role" />
@@ -237,12 +196,6 @@ export const UserEditModal = ({ user, open, onOpenChange, onUserUpdated }: UserE
                     <div className="flex items-center">
                       <User className="w-4 h-4 mr-2" />
                       User
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="manager">
-                    <div className="flex items-center">
-                      <User className="w-4 h-4 mr-2" />
-                      Manager
                     </div>
                   </SelectItem>
                 </SelectContent>

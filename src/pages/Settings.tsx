@@ -66,8 +66,8 @@ const Settings = () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('first_name, last_name, email, phone')
-        .eq('user_id', user.id)
+        .select('full_name')
+        .eq('id', user.id)
         .single();
 
       if (error) {
@@ -76,12 +76,13 @@ const Settings = () => {
       }
 
       if (data) {
+        const names = data.full_name?.split(' ') || [''];
         setProfile({
-          firstName: data.first_name || "",
-          lastName: data.last_name || "",
-          email: data.email || user.email || "",
-          phone: data.phone || "",
-          company: "" // Add this to profiles table if needed
+          firstName: names[0] || "",
+          lastName: names.slice(1).join(' ') || "",
+          email: user.email || "",
+          phone: "",
+          company: ""
         });
       }
     } catch (error) {
@@ -94,16 +95,14 @@ const Settings = () => {
 
     setLoading(true);
     try {
+      const fullName = `${profile.firstName} ${profile.lastName}`.trim();
       const { error } = await supabase
         .from('profiles')
-        .upsert({
-          user_id: user.id,
-          first_name: profile.firstName,
-          last_name: profile.lastName,
-          email: profile.email,
-          phone: profile.phone,
+        .update({
+          full_name: fullName || null,
           updated_at: new Date().toISOString()
-        });
+        })
+        .eq('id', user.id);
 
       if (error) {
         toast({

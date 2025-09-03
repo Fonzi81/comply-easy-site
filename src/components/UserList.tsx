@@ -84,7 +84,6 @@ export const UserList = ({ users, loading, onEditUser }: UserListProps) => {
         <TableHeader>
           <TableRow>
             <TableHead>User</TableHead>
-            <TableHead>Contact</TableHead>
             <TableHead>Role</TableHead>
             <TableHead>Joined</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -96,38 +95,18 @@ export const UserList = ({ users, loading, onEditUser }: UserListProps) => {
               <TableCell>
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={user.avatar_url || undefined} />
                     <AvatarFallback className="bg-primary text-primary-foreground">
-                      {getInitials(user.first_name, user.last_name, user.email)}
+                      {getInitials(user.full_name)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-medium">
-                      {user.first_name && user.last_name 
-                        ? `${user.first_name} ${user.last_name}`
-                        : user.email?.split('@')[0] || 'Unknown User'
-                      }
+                      {user.full_name || 'Unknown User'}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      ID: {user.user_id.slice(0, 8)}...
+                      ID: {user.id.slice(0, 8)}...
                     </p>
                   </div>
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="space-y-1">
-                  {user.email && (
-                    <div className="flex items-center text-sm">
-                      <Mail className="w-3 h-3 mr-2 text-muted-foreground" />
-                      {user.email}
-                    </div>
-                  )}
-                  {user.phone && (
-                    <div className="flex items-center text-sm">
-                      <Phone className="w-3 h-3 mr-2 text-muted-foreground" />
-                      {user.phone}
-                    </div>
-                  )}
                 </div>
               </TableCell>
               <TableCell>
