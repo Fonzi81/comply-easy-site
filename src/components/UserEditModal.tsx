@@ -76,8 +76,8 @@ export const UserEditModal = ({ user, open, onOpenChange, onUserUpdated }: UserE
         throw profileError;
       }
 
-      // Update role if changed
-      if (formData.role !== user.role) {
+      // Update role if changed (only allow non-admin role changes)
+      if (formData.role !== user.role && user.role !== 'admin' && formData.role !== 'admin') {
         // Delete existing role
         await supabase
           .from('user_roles')
@@ -216,31 +216,38 @@ export const UserEditModal = ({ user, open, onOpenChange, onUserUpdated }: UserE
 
           <div className="space-y-2">
             <Label htmlFor="role">Role</Label>
-            <Select value={formData.role} onValueChange={(value: 'admin' | 'manager' | 'user') => setFormData(prev => ({ ...prev, role: value }))}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="user">
-                  <div className="flex items-center">
-                    <User className="w-4 h-4 mr-2" />
-                    User
-                  </div>
-                </SelectItem>
-                <SelectItem value="manager">
-                  <div className="flex items-center">
-                    <User className="w-4 h-4 mr-2" />
-                    Manager
-                  </div>
-                </SelectItem>
-                <SelectItem value="admin">
-                  <div className="flex items-center">
-                    <Shield className="w-4 h-4 mr-2" />
-                    Administrator
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            {user?.role === 'admin' ? (
+              <div className="flex items-center p-3 bg-muted rounded-lg">
+                <Shield className="w-4 h-4 mr-2 text-destructive" />
+                <span className="font-medium text-destructive">Administrator</span>
+                <Badge className="ml-2 bg-destructive text-destructive-foreground">
+                  Cannot be modified
+                </Badge>
+              </div>
+            ) : (
+              <Select 
+                value={formData.role} 
+                onValueChange={(value: 'manager' | 'user') => setFormData(prev => ({ ...prev, role: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">
+                    <div className="flex items-center">
+                      <User className="w-4 h-4 mr-2" />
+                      User
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="manager">
+                    <div className="flex items-center">
+                      <User className="w-4 h-4 mr-2" />
+                      Manager
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           </div>
         </div>
 

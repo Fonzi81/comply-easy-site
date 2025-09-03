@@ -29,7 +29,6 @@ import Partners from "./pages/Partners";
 import Security from "./pages/Security";
 import NotFound from "./pages/NotFound";
 import AppShell from "./components/AppShell";
-import AdminSetup from "./pages/AdminSetup";
 import { AuthProvider } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -68,7 +67,6 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/admin-setup" element={<AdminSetup />} />
               <Route path="/product/overview" element={<ProductOverview />} />
               <Route path="/product/food-safety-3-2-2a" element={<FoodSafety />} />
               <Route path="/product/whs" element={<WHS />} />
