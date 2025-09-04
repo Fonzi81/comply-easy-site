@@ -39,8 +39,15 @@ const UserManagement = () => {
     try {
       setLoading(true);
       
+      // Debug: Check current user session
+      const { data: session } = await supabase.auth.getSession();
+      console.log('Current session:', session);
+      console.log('Current user:', user);
+      
       // Use the secure RPC function that checks admin permissions
       const { data: users, error } = await supabase.rpc('admin_list_users');
+
+      console.log('RPC Response:', { users, error });
 
       if (error) {
         throw error;
