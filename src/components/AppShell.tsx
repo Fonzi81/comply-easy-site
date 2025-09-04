@@ -63,12 +63,15 @@ const AppShell = () => {
     if (!user) return;
     
     try {
-      const { data: roles } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id);
+      const { data: hasAccess, error } = await supabase
+        .rpc('has_permission', { perm: 'admin.portal.access' });
       
-      setIsAdmin(roles?.some(r => r.role === 'admin') || false);
+      if (error) {
+        console.error('Error checking admin status:', error);
+        return;
+      }
+      
+      setIsAdmin(!!hasAccess);
     } catch (error) {
       console.error('Error checking admin status:', error);
     }
@@ -115,9 +118,19 @@ const AppShell = () => {
 
   const adminNavItems: NavItem[] = [
     {
+      title: "Admin Dashboard",
+      url: "/admin",
+      icon: LayoutDashboard,
+    },
+    {
       title: "User Management",
       url: "/admin/users",
       icon: UserCog,
+    },
+    {
+      title: "Role Management", 
+      url: "/admin/roles",
+      icon: Shield,
     },
   ];
 

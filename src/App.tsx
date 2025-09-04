@@ -13,7 +13,9 @@ import Evidence from "./pages/Evidence";
 import AuditPack from "./pages/AuditPack";
 import Templates from "./pages/Templates";
 import Settings from "./pages/Settings";
-import UserManagement from "./pages/UserManagement";
+import UserManagement from "@/pages/UserManagement";
+import RoleManagement from "@/pages/RoleManagement";
+import AdminDashboard from "@/pages/AdminDashboard";
 import ProductOverview from "./pages/ProductOverview";
 import FoodSafety from "./pages/FoodSafety";
 import WHS from "./pages/WHS";
@@ -131,12 +133,26 @@ const App = () => {
               }>
                 <Route index element={<Settings />} />
               </Route>
+              <Route path="/admin" element={
+                <ProtectedRoute>
+                  <AppShell />
+                </ProtectedRoute>
+              }>
+                <Route index element={<AdminDashboard />} />
+              </Route>
               <Route path="/admin/users" element={
                 <ProtectedRoute>
                   <AppShell />
                 </ProtectedRoute>
               }>
                 <Route index element={<UserManagement />} />
+              </Route>
+              <Route path="/admin/roles" element={
+                <ProtectedRoute>
+                  <AppShell />
+                </ProtectedRoute>
+              }>
+                <Route index element={<RoleManagement />} />
               </Route>
               
               <Route path="*" element={<NotFound />} />
