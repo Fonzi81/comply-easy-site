@@ -396,6 +396,69 @@ export type Database = {
         }
         Relationships: []
       }
+      system_metrics: {
+        Row: {
+          details: Json | null
+          id: string
+          metric_name: string
+          metric_unit: string | null
+          metric_value: number
+          recorded_at: string
+        }
+        Insert: {
+          details?: Json | null
+          id?: string
+          metric_name: string
+          metric_unit?: string | null
+          metric_value: number
+          recorded_at?: string
+        }
+        Update: {
+          details?: Json | null
+          id?: string
+          metric_name?: string
+          metric_unit?: string | null
+          metric_value?: number
+          recorded_at?: string
+        }
+        Relationships: []
+      }
+      user_activity_logs: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          id: string
+          ip_address: unknown | null
+          resource_id: string | null
+          resource_type: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -417,6 +480,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          login_time: string
+          logout_time: string | null
+          session_duration: unknown | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          login_time?: string
+          logout_time?: string | null
+          session_duration?: unknown | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          login_time?: string
+          logout_time?: string | null
+          session_duration?: unknown | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -425,6 +521,19 @@ export type Database = {
       admin_assign_permission: {
         Args: { perm_key: string; role_key: string }
         Returns: boolean
+      }
+      admin_get_analytics: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          active_users_30d: number
+          active_users_7d: number
+          completed_tasks: number
+          storage_used: number
+          total_evidence: number
+          total_organizations: number
+          total_tasks: number
+          total_users: number
+        }[]
       }
       admin_get_permissions: {
         Args: Record<PropertyKey, never>

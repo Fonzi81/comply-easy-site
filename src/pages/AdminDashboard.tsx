@@ -2,7 +2,7 @@ import { useAdminGuard } from '@/hooks/useAdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Users, Shield, Settings, BarChart3 } from 'lucide-react';
+import { Users, Shield, Settings, BarChart3, Activity, Server } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -61,6 +61,44 @@ export default function AdminDashboard() {
             <Link to="/admin/roles">
               <Button size="sm" className="w-full">
                 Manage Roles
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Analytics Dashboard
+            </CardTitle>
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <CardDescription className="mb-4">
+              View system analytics and user engagement metrics
+            </CardDescription>
+            <Link to="/admin/analytics">
+              <Button size="sm" className="w-full">
+                View Analytics
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              System Health
+            </CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <CardDescription className="mb-4">
+              Monitor system performance and infrastructure status
+            </CardDescription>
+            <Link to="/admin/system">
+              <Button size="sm" className="w-full">
+                System Health
               </Button>
             </Link>
           </CardContent>
