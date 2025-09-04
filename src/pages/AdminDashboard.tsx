@@ -2,7 +2,7 @@ import { useAdminGuard } from '@/hooks/useAdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Users, Shield, Settings, BarChart3, Activity, Server } from 'lucide-react';
+import { Users, Shield, Settings, BarChart3, Activity } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -23,11 +23,30 @@ export default function AdminDashboard() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
         <p className="text-muted-foreground">
-          Manage users, roles, and system settings
+          Manage users, roles, and monitor system performance
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Analytics
+            </CardTitle>
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <CardDescription className="mb-4">
+              View system metrics and user analytics
+            </CardDescription>
+            <Link to="/admin/analytics">
+              <Button size="sm" className="w-full">
+                View Analytics
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -69,55 +88,17 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Analytics Dashboard
-            </CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <CardDescription className="mb-4">
-              View system analytics and user engagement metrics
-            </CardDescription>
-            <Link to="/admin/analytics">
-              <Button size="sm" className="w-full">
-                View Analytics
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
               System Health
             </CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <CardDescription className="mb-4">
-              Monitor system performance and infrastructure status
+              Monitor system performance and health
             </CardDescription>
             <Link to="/admin/system">
               <Button size="sm" className="w-full">
-                System Health
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              System Settings
-            </CardTitle>
-            <Settings className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <CardDescription className="mb-4">
-              Configure system-wide settings and preferences
-            </CardDescription>
-            <Link to="/settings">
-              <Button size="sm" className="w-full" variant="outline">
-                System Settings
+                System Status
               </Button>
             </Link>
           </CardContent>
@@ -129,13 +110,21 @@ export default function AdminDashboard() {
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
             <CardDescription>
-              Common administrative tasks
+              Common administrative tasks and insights
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-2">
-                <h4 className="font-medium">User Actions</h4>
+                <h4 className="font-medium">Analytics & Monitoring</h4>
+                <div className="space-y-1 text-sm text-muted-foreground">
+                  <div>• View user activity and engagement metrics</div>
+                  <div>• Monitor system performance</div>
+                  <div>• Track storage usage and task completion</div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <h4 className="font-medium">User Management</h4>
                 <div className="space-y-1 text-sm text-muted-foreground">
                   <div>• Create and manage user accounts</div>
                   <div>• Assign and modify user roles</div>
@@ -143,11 +132,11 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="space-y-2">
-                <h4 className="font-medium">System Actions</h4>
+                <h4 className="font-medium">System Health</h4>
                 <div className="space-y-1 text-sm text-muted-foreground">
-                  <div>• Configure role permissions</div>
-                  <div>• Manage system templates</div>
-                  <div>• Review audit logs</div>
+                  <div>• Monitor database performance</div>
+                  <div>• View error logs and system status</div>
+                  <div>• Track infrastructure metrics</div>
                 </div>
               </div>
             </div>

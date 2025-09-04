@@ -16,8 +16,8 @@ import Settings from "./pages/Settings";
 import UserManagement from "@/pages/UserManagement";
 import RoleManagement from "@/pages/RoleManagement";
 import AdminDashboard from "@/pages/AdminDashboard";
-import Analytics from "@/pages/Analytics";
-import SystemHealth from "@/pages/SystemHealth";
+import AdminAnalytics from "@/pages/AdminAnalytics";
+import AdminSystem from "@/pages/AdminSystem";
 import ProductOverview from "./pages/ProductOverview";
 import FoodSafety from "./pages/FoodSafety";
 import WHS from "./pages/WHS";
@@ -161,14 +161,14 @@ const App = () => {
                   <AppShell />
                 </ProtectedRoute>
               }>
-                <Route index element={<Analytics />} />
+                <Route index element={<AdminAnalytics />} />
               </Route>
               <Route path="/admin/system" element={
                 <ProtectedRoute>
                   <AppShell />
                 </ProtectedRoute>
               }>
-                <Route index element={<SystemHealth />} />
+                <Route index element={<AdminSystem />} />
               </Route>
               
               <Route path="*" element={<NotFound />} />
