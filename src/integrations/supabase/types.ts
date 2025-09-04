@@ -300,6 +300,27 @@ export type Database = {
         }
         Relationships: []
       }
+      permissions: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          key: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -321,6 +342,57 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
+        }
+        Relationships: []
+      }
+      role_permissions: {
+        Row: {
+          permission_id: string
+          role_id: string
+        }
+        Insert: {
+          permission_id: string
+          role_id: string
+        }
+        Update: {
+          permission_id?: string
+          role_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_permission_id_fkey"
+            columns: ["permission_id"]
+            isOneToOne: false
+            referencedRelation: "permissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "role_permissions_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roles: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          label: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          label: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          label?: string
         }
         Relationships: []
       }
@@ -350,6 +422,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_assign_permission: {
+        Args: { perm_key: string; role_key: string }
+        Returns: boolean
+      }
+      admin_get_permissions: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          description: string
+          id: string
+          key: string
+        }[]
+      }
+      admin_get_roles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          key: string
+          label: string
+          permission_count: number
+        }[]
+      }
       admin_list_users: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -359,6 +452,10 @@ export type Database = {
           id: string
           role: Database["public"]["Enums"]["user_role"]
         }[]
+      }
+      admin_revoke_permission: {
+        Args: { perm_key: string; role_key: string }
+        Returns: boolean
       }
       get_user_profile_with_role: {
         Args: { _user_id: string }
@@ -374,6 +471,10 @@ export type Database = {
           updated_at: string
           user_id: string
         }[]
+      }
+      has_permission: {
+        Args: { perm: string }
+        Returns: boolean
       }
       has_role: {
         Args: {
