@@ -1,5 +1,6 @@
 import { useAdminGuard } from '@/hooks/useAdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Loader2, Users, Building2, CheckCircle, FileText, Activity, TrendingUp, Database, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,6 +31,7 @@ export default function AdminAnalytics() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [analyticsLoading, setAnalyticsLoading] = useState(true);
+  const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
 
   useEffect(() => {
     if (isAdmin) {
@@ -138,7 +140,7 @@ export default function AdminAnalytics() {
 
       {/* Key Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-        <Card>
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelectedMetric('users')}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
@@ -151,7 +153,7 @@ export default function AdminAnalytics() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelectedMetric('organizations')}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Organizations</CardTitle>
             <Building2 className="h-4 w-4 text-muted-foreground" />
@@ -164,7 +166,7 @@ export default function AdminAnalytics() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelectedMetric('tasks')}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Task Completion</CardTitle>
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
@@ -177,7 +179,7 @@ export default function AdminAnalytics() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelectedMetric('storage')}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Storage Used</CardTitle>
             <Database className="h-4 w-4 text-muted-foreground" />
@@ -192,22 +194,22 @@ export default function AdminAnalytics() {
       </div>
 
       {/* Activity Charts */}
-      <div className="grid gap-6 md:grid-cols-2 mb-8">
-        <Card>
+      <div className="grid gap-6 lg:grid-cols-3 mb-8">
+        <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
             <CardDescription>Daily activity over the last 7 days</CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer
-              config={{
-                tasks: { label: "Tasks", color: "hsl(var(--primary))" },
-                evidence: { label: "Evidence", color: "hsl(var(--secondary))" },
-              }}
-              className="h-[300px]"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={recentActivity}>
+            <div className="h-[300px] w-full">
+              <ChartContainer
+                config={{
+                  tasks: { label: "Tasks", color: "hsl(var(--primary))" },
+                  evidence: { label: "Evidence", color: "hsl(var(--secondary))" },
+                }}
+                className="h-full w-full"
+              >
+                <LineChart data={recentActivity} width={undefined} height={undefined}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
@@ -227,8 +229,8 @@ export default function AdminAnalytics() {
                     name="Evidence Uploaded"
                   />
                 </LineChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+              </ChartContainer>
+            </div>
           </CardContent>
         </Card>
 
@@ -238,27 +240,27 @@ export default function AdminAnalytics() {
             <CardDescription>User activity comparison</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                 <div className="flex items-center space-x-2">
                   <Activity className="h-4 w-4 text-green-500" />
-                  <span className="text-sm">Active Users (7d)</span>
+                  <span className="text-sm font-medium">Active Users (7d)</span>
                 </div>
-                <span className="font-medium">{analytics?.active_users_7d || 0}</span>
+                <span className="text-lg font-bold">{analytics?.active_users_7d || 0}</span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                 <div className="flex items-center space-x-2">
                   <Clock className="h-4 w-4 text-blue-500" />
-                  <span className="text-sm">Active Users (30d)</span>
+                  <span className="text-sm font-medium">Active Users (30d)</span>
                 </div>
-                <span className="font-medium">{analytics?.active_users_30d || 0}</span>
+                <span className="text-lg font-bold">{analytics?.active_users_30d || 0}</span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="h-4 w-4 text-purple-500" />
-                  <span className="text-sm">Engagement Rate</span>
+                  <span className="text-sm font-medium">Engagement Rate</span>
                 </div>
-                <span className="font-medium">
+                <span className="text-lg font-bold">
                   {analytics?.total_users ? 
                     Math.round(((analytics.active_users_7d || 0) / analytics.total_users) * 100) : 0}%
                 </span>
@@ -268,6 +270,123 @@ export default function AdminAnalytics() {
         </Card>
       </div>
 
+      {/* Metric Detail View */}
+      {selectedMetric && (
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              Detailed View: {selectedMetric.charAt(0).toUpperCase() + selectedMetric.slice(1)}
+              <Button variant="outline" size="sm" onClick={() => setSelectedMetric(null)}>
+                Close
+              </Button>
+            </CardTitle>
+            <CardDescription>
+              Detailed breakdown and insights for {selectedMetric}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-3">
+                <h4 className="font-medium">Key Metrics</h4>
+                {selectedMetric === 'users' && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm">Total Users</span>
+                      <span className="font-medium">{analytics?.total_users || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Active (7 days)</span>
+                      <span className="font-medium">{analytics?.active_users_7d || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Active (30 days)</span>
+                      <span className="font-medium">{analytics?.active_users_30d || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Retention Rate</span>
+                      <span className="font-medium">
+                        {analytics?.active_users_30d && analytics?.total_users ? 
+                          Math.round((analytics.active_users_30d / analytics.total_users) * 100) : 0}%
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {selectedMetric === 'tasks' && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm">Total Tasks</span>
+                      <span className="font-medium">{analytics?.total_tasks || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Completed</span>
+                      <span className="font-medium">{analytics?.completed_tasks || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Completion Rate</span>
+                      <span className="font-medium">{calculateCompletionRate()}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Avg per User</span>
+                      <span className="font-medium">
+                        {analytics?.total_users && analytics.total_users > 0 ? 
+                          Math.round((analytics.total_tasks || 0) / analytics.total_users) : 0}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {selectedMetric === 'organizations' && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm">Total Organizations</span>
+                      <span className="font-medium">{analytics?.total_organizations || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Avg Users per Org</span>
+                      <span className="font-medium">
+                        {analytics?.total_organizations && analytics.total_organizations > 0 ? 
+                          Math.round((analytics.total_users || 0) / analytics.total_organizations) : 0}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Avg Tasks per Org</span>
+                      <span className="font-medium">
+                        {analytics?.total_organizations && analytics.total_organizations > 0 ? 
+                          Math.round((analytics.total_tasks || 0) / analytics.total_organizations) : 0}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {selectedMetric === 'storage' && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm">Total Storage</span>
+                      <span className="font-medium">{formatBytes(analytics?.storage_used || 0)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Total Files</span>
+                      <span className="font-medium">{analytics?.total_evidence || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Avg File Size</span>
+                      <span className="font-medium">
+                        {analytics?.total_evidence && analytics.total_evidence > 0 ? 
+                          formatBytes((analytics.storage_used || 0) / analytics.total_evidence) : '0 Bytes'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="space-y-3">
+                <h4 className="font-medium">Recent Trends</h4>
+                <div className="text-sm text-muted-foreground">
+                  Detailed trend analysis and recommendations would appear here based on the selected metric.
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* System Health */}
       <div className="grid gap-6 md:grid-cols-3">
         <Card>
@@ -275,17 +394,17 @@ export default function AdminAnalytics() {
             <CardTitle className="text-lg">System Status</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Database</span>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-2 rounded bg-green-50">
+                <span className="text-sm font-medium">Database</span>
                 <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Healthy</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Storage</span>
+              <div className="flex items-center justify-between p-2 rounded bg-green-50">
+                <span className="text-sm font-medium">Storage</span>
                 <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Normal</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Authentication</span>
+              <div className="flex items-center justify-between p-2 rounded bg-green-50">
+                <span className="text-sm font-medium">Authentication</span>
                 <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Active</span>
               </div>
             </div>
@@ -297,18 +416,18 @@ export default function AdminAnalytics() {
             <CardTitle className="text-lg">Performance</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Response Time</span>
-                <span className="text-sm font-medium">~200ms</span>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-2 rounded bg-blue-50">
+                <span className="text-sm font-medium">Response Time</span>
+                <span className="text-sm font-bold">~200ms</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Uptime</span>
-                <span className="text-sm font-medium">99.9%</span>
+              <div className="flex items-center justify-between p-2 rounded bg-blue-50">
+                <span className="text-sm font-medium">Uptime</span>
+                <span className="text-sm font-bold">99.9%</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Error Rate</span>
-                <span className="text-sm font-medium">0.1%</span>
+              <div className="flex items-center justify-between p-2 rounded bg-blue-50">
+                <span className="text-sm font-medium">Error Rate</span>
+                <span className="text-sm font-bold">0.1%</span>
               </div>
             </div>
           </CardContent>
@@ -319,24 +438,24 @@ export default function AdminAnalytics() {
             <CardTitle className="text-lg">Quick Stats</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Avg Tasks/User</span>
-                <span className="text-sm font-medium">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-2 rounded bg-purple-50">
+                <span className="text-sm font-medium">Avg Tasks/User</span>
+                <span className="text-sm font-bold">
                   {analytics?.total_users && analytics.total_users > 0 ? 
                     Math.round((analytics.total_tasks || 0) / analytics.total_users) : 0}
                 </span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Evidence/Task</span>
-                <span className="text-sm font-medium">
+              <div className="flex items-center justify-between p-2 rounded bg-purple-50">
+                <span className="text-sm font-medium">Evidence/Task</span>
+                <span className="text-sm font-bold">
                   {analytics?.total_tasks && analytics.total_tasks > 0 ? 
                     Math.round((analytics.total_evidence || 0) / analytics.total_tasks) : 0}
                 </span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Avg Storage/Org</span>
-                <span className="text-sm font-medium">
+              <div className="flex items-center justify-between p-2 rounded bg-purple-50">
+                <span className="text-sm font-medium">Avg Storage/Org</span>
+                <span className="text-sm font-bold">
                   {analytics?.total_organizations && analytics.total_organizations > 0 ? 
                     formatBytes((analytics.storage_used || 0) / analytics.total_organizations) : '0 Bytes'}
                 </span>
