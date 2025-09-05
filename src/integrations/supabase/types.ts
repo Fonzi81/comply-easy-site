@@ -175,6 +175,69 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_subscriptions: {
+        Row: {
+          billing_cycle: string | null
+          created_at: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          customer_id: string | null
+          id: string
+          mrr: number | null
+          status: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          tier_id: string | null
+          trial_ends_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          billing_cycle?: string | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          customer_id?: string | null
+          id?: string
+          mrr?: number | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tier_id?: string | null
+          trial_ends_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          billing_cycle?: string | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          customer_id?: string | null
+          id?: string
+          mrr?: number | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tier_id?: string | null
+          trial_ends_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_subscriptions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_subscriptions_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       evidence: {
         Row: {
           created_at: string | null
@@ -345,6 +408,42 @@ export type Database = {
         }
         Relationships: []
       }
+      revenue_metrics: {
+        Row: {
+          active_subscriptions: number | null
+          arr: number
+          churned_customers: number | null
+          created_at: string | null
+          id: string
+          month_year: string
+          mrr: number
+          new_customers: number | null
+          trial_conversions: number | null
+        }
+        Insert: {
+          active_subscriptions?: number | null
+          arr?: number
+          churned_customers?: number | null
+          created_at?: string | null
+          id?: string
+          month_year: string
+          mrr?: number
+          new_customers?: number | null
+          trial_conversions?: number | null
+        }
+        Update: {
+          active_subscriptions?: number | null
+          arr?: number
+          churned_customers?: number | null
+          created_at?: string | null
+          id?: string
+          month_year?: string
+          mrr?: number
+          new_customers?: number | null
+          trial_conversions?: number | null
+        }
+        Relationships: []
+      }
       role_permissions: {
         Row: {
           permission_id: string
@@ -393,6 +492,51 @@ export type Database = {
           id?: string
           key?: string
           label?: string
+        }
+        Relationships: []
+      }
+      subscription_tiers: {
+        Row: {
+          created_at: string | null
+          features: Json
+          id: string
+          is_active: boolean | null
+          max_sites: number | null
+          max_tasks: number | null
+          max_users: number | null
+          name: string
+          price_monthly: number
+          price_yearly: number
+          storage_gb: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean | null
+          max_sites?: number | null
+          max_tasks?: number | null
+          max_users?: number | null
+          name: string
+          price_monthly: number
+          price_yearly: number
+          storage_gb?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean | null
+          max_sites?: number | null
+          max_tasks?: number | null
+          max_users?: number | null
+          name?: string
+          price_monthly?: number
+          price_yearly?: number
+          storage_gb?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
