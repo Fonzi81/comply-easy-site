@@ -21,6 +21,9 @@ import ComplianceCalendar from "@/components/ComplianceCalendar";
 import TemplateModal from "@/components/TemplateModal";
 import EvidenceManager from "@/components/EvidenceManager";
 import EvidenceModal from "@/components/EvidenceModal";
+import { OrganizationSetup } from "@/components/OrganizationSetup";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface User {
   username: string;
@@ -39,59 +42,77 @@ interface ComplianceItem {
 }
 
 const Dashboard = () => {
+  const { user } = useAuth();
   const [complianceItems, setComplianceItems] = useState<ComplianceItem[]>([]);
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [isAuditPackOpen, setIsAuditPackOpen] = useState(false);
   const [isReminderOpen, setIsReminderOpen] = useState(false);
   const [isTemplateOpen, setIsTemplateOpen] = useState(false);
   const [isEvidenceOpen, setIsEvidenceOpen] = useState(false);
+  const [hasOrganization, setHasOrganization] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
-    // Initialize sample compliance data
-    const sampleData: ComplianceItem[] = [
-      {
-        id: '1',
-        title: 'Temperature Log Review',
-        category: 'food-safety',
-        dueDate: '2024-01-15',
-        status: 'upcoming',
-        priority: 'high'
-      },
-      {
-        id: '2',
-        title: 'Fire Extinguisher Inspection',
-        category: 'fire-safety',
-        dueDate: '2024-01-10',
-        status: 'overdue',
-        priority: 'high'
-      },
-      {
-        id: '3',
-        title: 'Staff Safety Training',
-        category: 'whs',
-        dueDate: '2024-01-20',
-        status: 'upcoming',
-        priority: 'medium'
-      },
-      {
-        id: '4',
-        title: 'Equipment Testing',
-        category: 'test-tag',
-        dueDate: '2024-01-05',
-        status: 'completed',
-        priority: 'medium'
-      }
-    ];
-
-    const stored = localStorage.getItem('complianceItems');
-    if (stored) {
-      setComplianceItems(JSON.parse(stored));
-    } else {
-      setComplianceItems(sampleData);
-      localStorage.setItem('complianceItems', JSON.stringify(sampleData));
+    if (user) {
+      checkOrganizationMembership();
     }
-  }, []);
+  }, [user]);
+
+  const checkOrganizationMembership = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('organization_members')
+        .select('organization_id')
+        .eq('user_id', user.id)
+        .limit(1);
+
+      if (error) {
+        console.error('Error checking organization:', error);
+        setHasOrganization(false);
+      } else {
+        setHasOrganization(data && data.length > 0);
+        if (data && data.length > 0) {
+          loadComplianceData();
+        }
+      }
+    } catch (error) {
+      console.error('Error checking organization membership:', error);
+      setHasOrganization(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadComplianceData = async () => {
+    try {
+      // Load real compliance tasks from database
+      const { data, error } = await supabase
+        .from('compliance_tasks')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading tasks:', error);
+        return;
+      }
+
+      // Convert database format to component format
+      const tasks = (data || []).map(task => ({
+        id: task.id,
+        title: task.title,
+        category: task.category as 'food-safety' | 'whs' | 'fire-safety' | 'test-tag',
+        dueDate: new Date(task.due_date).toISOString().split('T')[0],
+        status: task.status as 'completed' | 'overdue' | 'upcoming',
+        priority: task.priority === 3 ? 'high' as const : task.priority === 2 ? 'medium' as const : 'low' as const
+      }));
+
+      setComplianceItems(tasks);
+    } catch (error) {
+      console.error('Error loading compliance data:', error);
+    }
+  };
 
   const handleAddTask = (task: ComplianceItem) => {
     const updatedItems = [...complianceItems, task];
@@ -132,10 +153,23 @@ const Dashboard = () => {
     }
   };
 
+  // Show organization setup for new users
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (hasOrganization === false) {
+    return <OrganizationSetup onComplete={() => setHasOrganization(true)} />;
+  }
+
   const completedItems = complianceItems.filter(item => item.status === 'completed');
   const overdue = complianceItems.filter(item => item.status === 'overdue');
   const upcoming = complianceItems.filter(item => item.status === 'upcoming');
-  const completionRate = Math.round((completedItems.length / complianceItems.length) * 100);
+  const completionRate = complianceItems.length > 0 ? Math.round((completedItems.length / complianceItems.length) * 100) : 0;
 
   return (
     <div className="space-y-6">
