@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useAdminGuard } from '@/hooks/useAdminGuard';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,7 +26,6 @@ interface RolePermission {
 }
 
 export default function RoleManagement() {
-  const { isAdmin, loading: adminLoading } = useAdminGuard();
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [rolePermissions, setRolePermissions] = useState<RolePermission[]>([]);
@@ -36,10 +34,8 @@ export default function RoleManagement() {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (isAdmin) {
-      loadData();
-    }
-  }, [isAdmin]);
+    loadData();
+  }, []);
 
   const loadData = async () => {
     try {
@@ -108,15 +104,13 @@ export default function RoleManagement() {
     return rolePermissions.some(rp => rp.role_id === roleId && rp.permission_id === permissionId);
   };
 
-  if (adminLoading || loading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
     );
   }
-
-  if (!isAdmin) return null;
 
   return (
     <div className="container mx-auto p-6">

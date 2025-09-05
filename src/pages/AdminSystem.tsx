@@ -1,4 +1,3 @@
-import { useAdminGuard } from '@/hooks/useAdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Database, Activity, AlertTriangle, CheckCircle, Clock, Server, HardDrive, Zap } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -24,25 +23,23 @@ interface RecentError {
 }
 
 export default function AdminSystem() {
-  const { isAdmin, loading } = useAdminGuard();
   const [systemHealth, setSystemHealth] = useState<SystemHealth | null>(null);
   const [recentErrors, setRecentErrors] = useState<RecentError[]>([]);
+  const [loading, setLoading] = useState(true);
   const [systemLoading, setSystemLoading] = useState(true);
 
   useEffect(() => {
-    if (isAdmin) {
+    loadSystemHealth();
+    loadRecentErrors();
+    
+    // Set up periodic refresh
+    const interval = setInterval(() => {
       loadSystemHealth();
       loadRecentErrors();
-      
-      // Set up periodic refresh
-      const interval = setInterval(() => {
-        loadSystemHealth();
-        loadRecentErrors();
-      }, 30000); // Refresh every 30 seconds
+    }, 30000); // Refresh every 30 seconds
 
-      return () => clearInterval(interval);
-    }
-  }, [isAdmin]);
+    return () => clearInterval(interval);
+  }, []);
 
   const loadSystemHealth = async () => {
     try {
@@ -146,15 +143,13 @@ export default function AdminSystem() {
     }
   };
 
-  if (loading || systemLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
-
-  if (!isAdmin) return null;
 
   const healthStatus = getHealthStatus();
 

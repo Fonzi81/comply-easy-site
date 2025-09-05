@@ -48,49 +48,9 @@ interface NavItem {
 }
 
 const AdminShell = () => {
-  const [isPlatformAdmin, setIsPlatformAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-
-  useEffect(() => {
-    checkPlatformAdminStatus();
-  }, [user]);
-
-  const checkPlatformAdminStatus = async () => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-    
-    try {
-      // Check if user has platform_admin role
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-      
-      if (error) {
-        console.error('Error checking admin status:', error);
-        navigate('/dashboard');
-        return;
-      }
-      
-      if (profile?.role !== 'platform_admin') {
-        navigate('/dashboard');
-        return;
-      }
-      
-      setIsPlatformAdmin(true);
-    } catch (error) {
-      console.error('Error checking platform admin status:', error);
-      navigate('/dashboard');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const adminNavItems: NavItem[] = [
     {
@@ -155,18 +115,6 @@ const AdminShell = () => {
     const navItem = adminNavItems.find(item => item.url === currentPath);
     return navItem?.title || 'Platform Administration';
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (!isPlatformAdmin) {
-    return null; // Will redirect in useEffect
-  }
 
   return (
     <SidebarProvider>

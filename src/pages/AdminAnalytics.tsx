@@ -1,4 +1,3 @@
-import { useAdminGuard } from '@/hooks/useAdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, Users, Building2, CheckCircle, FileText, Activity, TrendingUp, Database, Clock } from 'lucide-react';
@@ -27,18 +26,16 @@ interface RecentActivity {
 }
 
 export default function AdminAnalytics() {
-  const { isAdmin, loading } = useAdminGuard();
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [loading, setLoading] = useState(true);
   const [analyticsLoading, setAnalyticsLoading] = useState(true);
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isAdmin) {
-      loadAnalytics();
-      loadRecentActivity();
-    }
-  }, [isAdmin]);
+    loadAnalytics();
+    loadRecentActivity();
+  }, []);
 
   const loadAnalytics = async () => {
     try {
@@ -126,8 +123,6 @@ export default function AdminAnalytics() {
       </div>
     );
   }
-
-  if (!isAdmin) return null;
 
   return (
     <div className="container mx-auto p-6">

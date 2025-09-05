@@ -1,4 +1,3 @@
-import { useAdminGuard } from '@/hooks/useAdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,19 +45,17 @@ interface Template {
 }
 
 export default function AdminTemplates() {
-  const { isAdmin, loading } = useAdminGuard();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [filteredTemplates, setFilteredTemplates] = useState<Template[]>([]);
+  const [loading, setLoading] = useState(true);
   const [templatesLoading, setTemplatesLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
-    if (isAdmin) {
-      loadTemplates();
-    }
-  }, [isAdmin]);
+    loadTemplates();
+  }, []);
 
   useEffect(() => {
     // Apply filters
@@ -158,7 +155,13 @@ export default function AdminTemplates() {
     );
   };
 
-  if (loading || !isAdmin) return null;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   const stats = getTotalStats();
 

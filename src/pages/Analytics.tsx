@@ -1,4 +1,3 @@
-import { useAdminGuard } from '@/hooks/useAdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Users, Building2, CheckCircle, FileText, HardDrive, Activity } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -17,15 +16,12 @@ interface AnalyticsData {
 }
 
 export default function Analytics() {
-  const { isAdmin, loading: authLoading } = useAdminGuard();
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAnalytics = async () => {
-      if (!isAdmin) return;
-
       try {
         setLoading(true);
         const { data, error } = await supabase.rpc('admin_get_analytics');
@@ -44,17 +40,15 @@ export default function Analytics() {
     };
 
     fetchAnalytics();
-  }, [isAdmin]);
+  }, []);
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
-
-  if (!isAdmin) return null;
 
   if (error) {
     return (

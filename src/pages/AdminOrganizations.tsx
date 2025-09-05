@@ -1,4 +1,3 @@
-import { useAdminGuard } from '@/hooks/useAdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,17 +38,15 @@ interface Organization {
 }
 
 export default function AdminOrganizations() {
-  const { isAdmin, loading } = useAdminGuard();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [filteredOrganizations, setFilteredOrganizations] = useState<Organization[]>([]);
+  const [loading, setLoading] = useState(true);
   const [orgsLoading, setOrgsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    if (isAdmin) {
-      loadOrganizations();
-    }
-  }, [isAdmin]);
+    loadOrganizations();
+  }, []);
 
   useEffect(() => {
     // Apply search filter
@@ -114,7 +111,13 @@ export default function AdminOrganizations() {
     );
   };
 
-  if (loading || !isAdmin) return null;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   const stats = getTotalStats();
 

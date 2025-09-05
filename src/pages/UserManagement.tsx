@@ -1,4 +1,3 @@
-import { useAdminGuard } from '@/hooks/useAdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,9 +54,9 @@ interface User {
 }
 
 export default function UserManagement() {
-  const { isAdmin, loading } = useAdminGuard();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
   const [usersLoading, setUsersLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'user' | 'platform_admin' | 'customer'>('all');
@@ -79,10 +78,8 @@ export default function UserManagement() {
   });
 
   useEffect(() => {
-    if (isAdmin) {
-      loadUsers();
-    }
-  }, [isAdmin]);
+    loadUsers();
+  }, []);
 
   useEffect(() => {
     // Apply filters
@@ -224,7 +221,13 @@ export default function UserManagement() {
     }
   };
 
-  if (loading || !isAdmin) return null;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6">

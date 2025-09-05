@@ -15,7 +15,7 @@ import Templates from "./pages/Templates";
 import Settings from "./pages/Settings";
 import UserManagement from "@/pages/UserManagement";
 import RoleManagement from "@/pages/RoleManagement";
-import AdminDashboard from "@/pages/AdminDashboard";
+import PlatformAdminDashboard from "@/pages/PlatformAdminDashboard";
 import AdminAnalytics from "@/pages/AdminAnalytics";
 import AdminSystem from "@/pages/AdminSystem";
 import AdminOrganizations from "@/pages/AdminOrganizations";
@@ -75,7 +75,7 @@ const App = () => {
                   <AdminShell />
                 </AdminRoute>
               }>
-                <Route index element={<AdminDashboard />} />
+                <Route index element={<PlatformAdminDashboard />} />
               </Route>
               <Route path="/admin/customers" element={
                 <AdminRoute>
