@@ -171,7 +171,7 @@ const Settings = () => {
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
           <TabsTrigger value="api">API & Webhooks</TabsTrigger>
-          <TabsTrigger value="sites">Sites</TabsTrigger>
+          <TabsTrigger value="sites">Organization</TabsTrigger>
         </TabsList>
 
         {/* Account Settings */}
@@ -504,57 +504,76 @@ const Settings = () => {
           </Card>
         </TabsContent>
 
-        {/* Sites Management */}
+        {/* Organization Management */}
         <TabsContent value="sites" className="space-y-6">
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Building className="w-5 h-5" />
-                    <span>Site Management</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Add, edit, and manage your business locations
-                  </CardDescription>
-                </div>
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Site
-                </Button>
-              </div>
+              <CardTitle className="flex items-center space-x-2">
+                <Building className="w-5 h-5" />
+                <span>Organization Management</span>
+              </CardTitle>
+              <CardDescription>
+                Manage your organization details and settings
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {[
-                  { name: "Main Site", address: "123 Business St, Brisbane QLD", status: "Active" },
-                  { name: "Cafe North", address: "456 Mall Rd, Southport QLD", status: "Active" },
-                  { name: "Cafe South", address: "789 Food Court, Gold Coast QLD", status: "Active" },
-                  { name: "Childcare Centre", address: "321 School Ave, Robina QLD", status: "Inactive" }
-                ].map((site, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <p className="font-medium">{site.name}</p>
-                      <p className="text-sm text-muted-foreground">{site.address}</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        site.status === 'Active' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {site.status}
-                      </span>
-                      <Button variant="outline" size="sm">
-                        Edit
-                      </Button>
-                      <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="orgName">Organization Name</Label>
+                <Input 
+                  id="orgName" 
+                  placeholder="Your business name"
+                />
               </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="industry">Industry</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select industry" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="food">Food & Beverage</SelectItem>
+                      <SelectItem value="childcare">Childcare</SelectItem>
+                      <SelectItem value="retail">Retail</SelectItem>
+                      <SelectItem value="manufacturing">Manufacturing</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="orgEmail">Contact Email</Label>
+                  <Input 
+                    id="orgEmail" 
+                    type="email" 
+                    placeholder="contact@business.com"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="address">Business Address</Label>
+                <Textarea 
+                  id="address" 
+                  placeholder="Enter your business address"
+                  rows={3}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="orgPhone">Phone Number</Label>
+                <Input 
+                  id="orgPhone" 
+                  type="tel" 
+                  placeholder="+61 400 000 000"
+                />
+              </div>
+
+              <Button>
+                <Save className="w-4 h-4 mr-2" />
+                Update Organization
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>

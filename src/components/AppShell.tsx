@@ -50,13 +50,17 @@ interface NavItem {
 }
 
 const AppShell = () => {
-  const [currentSite, setCurrentSite] = useState("Main Site");
+  const [organizations, setOrganizations] = useState<any[]>([]);
+  const [currentOrg, setCurrentOrg] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
   const { user, signOut } = useAuth();
 
   useEffect(() => {
-    checkAdminStatus();
+    if (user) {
+      checkAdminStatus();
+      loadOrganizations();
+    }
   }, [user]);
 
   const checkAdminStatus = async () => {
@@ -74,6 +78,46 @@ const AppShell = () => {
       setIsAdmin(!!hasAccess);
     } catch (error) {
       console.error('Error checking admin status:', error);
+    }
+  };
+
+  const loadOrganizations = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('organization_members')
+        .select(`
+          organization_id,
+          role,
+          organizations!inner (
+            id,
+            name,
+            industry,
+            address
+          )
+        `)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error loading organizations:', error);
+        return;
+      }
+
+      const orgs = data?.map(item => ({
+        id: item.organizations.id,
+        name: item.organizations.name,
+        industry: item.organizations.industry,
+        address: item.organizations.address,
+        role: item.role
+      })) || [];
+
+      setOrganizations(orgs);
+      if (orgs.length > 0) {
+        setCurrentOrg(orgs[0]);
+      }
+    } catch (error) {
+      console.error('Error loading organizations:', error);
     }
   };
 
@@ -134,7 +178,7 @@ const AppShell = () => {
     },
   ];
 
-  const sites = ["Main Site", "Cafe North", "Cafe South", "Childcare Centre"];
+  // Remove hardcoded sites - now using real organization data
 
   const handleLogout = async () => {
     await signOut();
@@ -163,36 +207,23 @@ const AppShell = () => {
               </div>
             </div>
 
-            {/* Site Switcher */}
-            <div className="p-4 border-b border-border">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-between text-foreground hover:bg-muted"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <Building className="w-4 h-4" />
-                      <span>{currentSite}</span>
-                    </div>
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="start">
-                  <DropdownMenuLabel>Select Site</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {sites.map((site) => (
-                    <DropdownMenuItem 
-                      key={site}
-                      onClick={() => setCurrentSite(site)}
-                      className={currentSite === site ? "bg-accent" : ""}
-                    >
-                      {site}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            {/* Organization Info */}
+            {currentOrg && (
+              <div className="p-4 border-b border-border">
+                <div className="flex items-center space-x-3">
+                  <Building className="w-4 h-4 text-muted-foreground" />
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{currentOrg.name}</p>
+                    <p className="text-xs text-muted-foreground">{currentOrg.industry}</p>
+                  </div>
+                </div>
+                {currentOrg.address && (
+                  <p className="text-xs text-muted-foreground mt-2 pl-7">
+                    {currentOrg.address}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Navigation */}
             <SidebarGroup>
