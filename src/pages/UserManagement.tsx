@@ -56,7 +56,7 @@ interface User {
 export default function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [usersLoading, setUsersLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'user' | 'platform_admin' | 'customer'>('all');
@@ -234,9 +234,9 @@ export default function UserManagement() {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Customer Management</h1>
             <p className="text-muted-foreground">
-              Manage user accounts, roles, and permissions
+              Manage customer accounts, roles, and subscriptions
             </p>
           </div>
           <Button onClick={() => setInviteModalOpen(true)}>
