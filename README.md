@@ -1,73 +1,207 @@
-# Welcome to your Lovable project
-
-## Project info
+# ComplyEasy - Compliance Management Platform
 
 **URL**: https://lovable.dev/projects/c787eeaa-df56-4e7d-9b8f-476398b6d25f
 
-## How can I edit this code?
+## Overview
 
-There are several ways of editing your application.
+ComplyEasy is a comprehensive compliance management platform designed specifically for small businesses in Australia. It streamlines compliance tasks across multiple domains including Food Safety, Workplace Health & Safety (WHS), Fire Safety, and Test & Tag requirements.
 
-**Use Lovable**
+## Key Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/c787eeaa-df56-4e7d-9b8f-476398b6d25f) and start prompting.
+### 🏢 **Multi-Tenant Architecture**
+- Organization-based user management
+- Role-based access control (Admin, Manager, User)
+- Secure data isolation between organizations
 
-Changes made via Lovable will be committed automatically to this repo.
+### 📋 **Compliance Management**
+- **Food Safety 3.2.2A**: Complete food safety compliance tracking
+- **WHS (Workplace Health & Safety)**: Risk management and safety protocols
+- **Fire Safety**: Fire prevention and safety equipment tracking
+- **Test & Tag**: Electrical equipment testing and certification
 
-**Use your preferred IDE**
+### 🎯 **Core Functionality**
+- **Task Management**: Create, assign, and track compliance tasks
+- **Calendar Integration**: Visual deadline tracking and reminders
+- **Evidence Management**: Upload and organize compliance documentation
+- **Audit Pack Generation**: One-click compliance reports
+- **State Template Packs**: Pre-loaded templates for QLD, NSW, VIC, WA
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 🛡️ **Admin Platform**
+- Platform administration dashboard
+- Customer and user management
+- Organization oversight
+- Subscription tier management
+- System analytics and health monitoring
+- Template library management
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Technology Stack
 
-Follow these steps:
+- **Frontend**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS with custom design system
+- **UI Components**: shadcn/ui
+- **Backend**: Supabase (Authentication, Database, Storage)
+- **State Management**: React Query + Context API
+- **Routing**: React Router v6
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Project Structure
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+src/
+├── components/          # Reusable UI components
+│   ├── ui/             # shadcn/ui components
+│   ├── AdminShell.tsx  # Admin layout wrapper
+│   ├── CustomerShell.tsx # Customer layout wrapper
+│   └── ...            # Feature-specific components
+├── pages/              # Route components
+│   ├── admin/         # Admin platform pages
+│   ├── customer/      # Customer dashboard pages
+│   └── public/        # Public marketing pages
+├── hooks/              # Custom React hooks
+├── integrations/       # Third-party integrations
+│   └── supabase/      # Supabase client and types
+├── lib/               # Utility functions
+└── types/             # TypeScript type definitions
 ```
 
-**Edit a file directly in GitHub**
+## Getting Started
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Prerequisites
+- Node.js 18+ and npm
+- Supabase account and project
 
-**Use GitHub Codespaces**
+### Installation
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. **Clone the repository**
+   ```bash
+   git clone <YOUR_GIT_URL>
+   cd <YOUR_PROJECT_NAME>
+   ```
 
-## What technologies are used for this project?
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-This project is built with:
+3. **Environment Setup**
+   - Copy `.env.example` to `.env`
+   - Configure Supabase credentials
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
 
-## How can I deploy this project?
+### Database Setup
 
-Simply open [Lovable](https://lovable.dev/projects/c787eeaa-df56-4e7d-9b8f-476398b6d25f) and click on Share -> Publish.
+The application uses Supabase with the following key tables:
+- `organizations` - Multi-tenant organization data
+- `organization_members` - User-organization relationships
+- `compliance_tasks` - Task management
+- `evidence_files` - Document storage
+- `audit_packs` - Compliance reports
+- `user_roles` - Permission management
 
-## Can I connect a custom domain to my Lovable project?
+Refer to `src/docs/ADMIN_SETUP.md` for admin user creation instructions.
 
-Yes, you can!
+## User Roles & Permissions
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### **Platform Admin**
+- Full system access
+- Customer management
+- Subscription management
+- System analytics
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### **Organization Admin**
+- Organization management
+- User invitation and role assignment
+- Compliance oversight
+
+### **Organization Manager**
+- Task assignment and tracking
+- Evidence review
+- Report generation
+
+### **Organization User**
+- Task completion
+- Evidence upload
+- Calendar access
+
+## Key Pages & Features
+
+### Public Marketing Site
+- **Landing Page** (`/`): Hero, features, pricing preview
+- **Product Pages**: Detailed compliance domain information
+- **Pricing** (`/pricing`): Subscription tiers and features
+- **Resources** (`/resources`): Compliance guides and downloads
+
+### Customer Dashboard
+- **Dashboard** (`/dashboard`): Compliance overview and quick actions
+- **Tasks** (`/tasks`): Full task management interface
+- **Calendar** (`/calendar`): Visual deadline tracking
+- **Evidence** (`/evidence`): Document management
+- **Audit Pack** (`/audit-pack`): Report generation
+- **Templates** (`/templates`): State pack imports
+
+### Admin Platform
+- **Platform Dashboard** (`/admin`): System overview
+- **Customer Management** (`/admin/customers`): Organization oversight
+- **User Management** (`/admin/users`): User administration
+- **Analytics** (`/admin/analytics`): Usage and performance metrics
+- **Subscription Tiers** (`/admin/subscription-tiers`): Plan management
+
+## Development Guidelines
+
+### Design System
+- Use semantic tokens from `index.css` and `tailwind.config.ts`
+- HSL color format for all design tokens
+- Component variants for reusability
+- Responsive design with mobile-first approach
+
+### Code Standards
+- TypeScript strict mode
+- ESLint configuration for code quality
+- Component composition over inheritance
+- Custom hooks for business logic
+
+### Security Considerations
+- Row Level Security (RLS) enabled on all tables
+- Permission-based route protection
+- Secure file upload handling
+- Admin privilege separation
+
+## Deployment
+
+### Production Deployment
+1. **Via Lovable**: Click Share → Publish in the Lovable interface
+2. **Custom Domain**: Configure in Project → Settings → Domains
+
+### Environment Configuration
+- Production Supabase project
+- Storage bucket configuration
+- Email templates setup
+- Payment gateway integration (if applicable)
+
+## Documentation
+
+- `src/docs/ADMIN_SETUP.md` - Admin user creation guide
+- `PRODUCTION_CHECKLIST.md` - Pre-launch verification steps
+- Supabase database schema and RLS policies
+
+## Support & Contributing
+
+For support or contributions:
+1. Review existing issues and documentation
+2. Follow the established code patterns
+3. Test thoroughly across user roles
+4. Maintain documentation updates
+
+## Security Notes
+
+- Admin roles must be created manually in Supabase
+- All user data is organization-scoped
+- File uploads are scanned and validated
+- Audit trails for compliance actions
+
+---
+
+Built with ❤️ using [Lovable](https://lovable.dev) - The fastest way to build web applications.
