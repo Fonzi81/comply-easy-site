@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_deletions: {
+        Row: {
+          billing_access_maintained: boolean
+          created_at: string
+          customer_id: string
+          data_retention_until: string
+          deleted_by: string
+          deletion_type: string
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          billing_access_maintained?: boolean
+          created_at?: string
+          customer_id: string
+          data_retention_until: string
+          deleted_by: string
+          deletion_type?: string
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          billing_access_maintained?: boolean
+          created_at?: string
+          customer_id?: string
+          data_retention_until?: string
+          deleted_by?: string
+          deletion_type?: string
+          id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
       audit_packs: {
         Row: {
           created_at: string | null
@@ -172,6 +205,110 @@ export type Database = {
           state_code?: string | null
           updated_at?: string | null
           version?: string | null
+        }
+        Relationships: []
+      }
+      customer_billing_history: {
+        Row: {
+          amount: number
+          billing_period_end: string
+          billing_period_start: string
+          created_at: string
+          currency: string
+          customer_id: string
+          due_date: string
+          id: string
+          invoice_number: string
+          invoice_url: string | null
+          paid_date: string | null
+          status: string
+          stripe_invoice_id: string | null
+          subscription_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          billing_period_end: string
+          billing_period_start: string
+          created_at?: string
+          currency?: string
+          customer_id: string
+          due_date: string
+          id?: string
+          invoice_number: string
+          invoice_url?: string | null
+          paid_date?: string | null
+          status?: string
+          stripe_invoice_id?: string | null
+          subscription_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          billing_period_end?: string
+          billing_period_start?: string
+          created_at?: string
+          currency?: string
+          customer_id?: string
+          due_date?: string
+          id?: string
+          invoice_number?: string
+          invoice_url?: string | null
+          paid_date?: string | null
+          status?: string
+          stripe_invoice_id?: string | null
+          subscription_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_billing_history_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "customer_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_payment_methods: {
+        Row: {
+          brand: string | null
+          created_at: string
+          customer_id: string
+          exp_month: number | null
+          exp_year: number | null
+          id: string
+          is_default: boolean
+          last_four: string | null
+          stripe_payment_method_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          brand?: string | null
+          created_at?: string
+          customer_id: string
+          exp_month?: number | null
+          exp_year?: number | null
+          id?: string
+          is_default?: boolean
+          last_four?: string | null
+          stripe_payment_method_id: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          brand?: string | null
+          created_at?: string
+          customer_id?: string
+          exp_month?: number | null
+          exp_year?: number | null
+          id?: string
+          is_default?: boolean
+          last_four?: string | null
+          stripe_payment_method_id?: string
+          type?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -381,6 +518,42 @@ export type Database = {
           description?: string | null
           id?: string
           key?: string
+        }
+        Relationships: []
+      }
+      platform_settings: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          is_public: boolean
+          setting_key: string
+          setting_type: string
+          setting_value: Json
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          setting_key: string
+          setting_type?: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          setting_key?: string
+          setting_type?: string
+          setting_value?: Json
+          updated_at?: string
         }
         Relationships: []
       }

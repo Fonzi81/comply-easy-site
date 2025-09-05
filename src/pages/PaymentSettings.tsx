@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   CreditCard, 
   DollarSign, 
@@ -59,8 +60,31 @@ export default function PaymentSettings() {
 
   const loadPaymentSettings = async () => {
     try {
-      // In a real implementation, you'd load from a platform_settings table
-      // For now, we'll simulate loading settings
+      const { data, error } = await supabase
+        .from('platform_settings')
+        .select('setting_key, setting_value')
+        .eq('category', 'payment');
+
+      if (error) throw error;
+
+      // Convert database settings to component state
+      const paymentSettings: Record<string, any> = {};
+      data?.forEach(setting => {
+        let value = setting.setting_value;
+        
+        // Parse JSON values
+        if (typeof value === 'string') {
+          try {
+            value = JSON.parse(value);
+          } catch (e) {
+            // Keep as string if not valid JSON
+          }
+        }
+        
+        paymentSettings[setting.setting_key] = value;
+      });
+
+      setConfig(prev => ({ ...prev, ...paymentSettings }));
       setLoading(false);
     } catch (error) {
       console.error('Error loading payment settings:', error);
@@ -76,9 +100,27 @@ export default function PaymentSettings() {
   const saveSettings = async () => {
     setSaving(true);
     try {
-      // In a real implementation, you'd save to a platform_settings table
-      // and update Stripe configuration
-      
+      // Update payment-related settings
+      const paymentFields = [
+        'stripe_mode', 'default_currency', 'trial_period_days', 
+        'grace_period_days', 'tax_calculation_enabled', 
+        'dunning_enabled', 'payment_retry_attempts', 'invoice_footer'
+      ];
+
+      for (const field of paymentFields) {
+        if (config[field as keyof PaymentConfig] !== undefined) {
+          const { error } = await supabase
+            .from('platform_settings')
+            .update({
+              setting_value: JSON.stringify(config[field as keyof PaymentConfig]),
+              updated_at: new Date().toISOString()
+            })
+            .eq('setting_key', field);
+
+          if (error) throw error;
+        }
+      }
+
       toast({
         title: "Success",
         description: "Payment settings updated successfully",

@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   Settings, 
   Globe, 
@@ -96,7 +97,30 @@ export default function PlatformSettings() {
 
   const loadPlatformSettings = async () => {
     try {
-      // In a real implementation, you'd load from a platform_settings table
+      const { data, error } = await supabase
+        .from('platform_settings')
+        .select('setting_key, setting_value, setting_type');
+
+      if (error) throw error;
+
+      // Convert database settings to component state
+      const settingsMap: Record<string, any> = {};
+      data?.forEach(setting => {
+        let value = setting.setting_value;
+        
+        // Parse JSON values
+        if (typeof value === 'string') {
+          try {
+            value = JSON.parse(value);
+          } catch (e) {
+            // Keep as string if not valid JSON
+          }
+        }
+        
+        settingsMap[setting.setting_key] = value;
+      });
+
+      setSettings(prev => ({ ...prev, ...settingsMap }));
       setLoading(false);
     } catch (error) {
       console.error('Error loading platform settings:', error);
@@ -112,7 +136,26 @@ export default function PlatformSettings() {
   const saveSettings = async () => {
     setSaving(true);
     try {
-      // In a real implementation, you'd save to a platform_settings table
+      // Prepare settings for database update
+      const updates = Object.entries(settings).map(([key, value]) => ({
+        setting_key: key,
+        setting_value: JSON.stringify(value),
+        updated_at: new Date().toISOString()
+      }));
+
+      // Update all settings
+      for (const update of updates) {
+        const { error } = await supabase
+          .from('platform_settings')
+          .update({
+            setting_value: update.setting_value,
+            updated_at: update.updated_at
+          })
+          .eq('setting_key', update.setting_key);
+
+        if (error) throw error;
+      }
+
       toast({
         title: "Success",
         description: "Platform settings updated successfully",
