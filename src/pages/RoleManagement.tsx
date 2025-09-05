@@ -26,6 +26,7 @@ interface RolePermission {
 }
 
 export default function RoleManagement() {
+  // Role and permission management component
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [rolePermissions, setRolePermissions] = useState<RolePermission[]>([]);
