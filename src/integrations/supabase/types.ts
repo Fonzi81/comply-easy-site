@@ -665,7 +665,7 @@ export type Database = {
       compliance_category: "food_safety" | "whs" | "fire_safety" | "test_tag"
       evidence_type: "document" | "image" | "video" | "other"
       task_status: "pending" | "in_progress" | "completed" | "overdue"
-      user_role: "admin" | "user"
+      user_role: "admin" | "user" | "platform_admin" | "customer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -797,7 +797,7 @@ export const Constants = {
       compliance_category: ["food_safety", "whs", "fire_safety", "test_tag"],
       evidence_type: ["document", "image", "video", "other"],
       task_status: ["pending", "in_progress", "completed", "overdue"],
-      user_role: ["admin", "user"],
+      user_role: ["admin", "user", "platform_admin", "customer"],
     },
   },
 } as const
