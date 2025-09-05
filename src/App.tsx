@@ -34,6 +34,9 @@ import Resources from "./pages/Resources";
 import Partners from "./pages/Partners";
 import Security from "./pages/Security";
 import NotFound from "./pages/NotFound";
+import SubscriptionTierManagement from "./pages/SubscriptionTierManagement";
+import PaymentSettings from "./pages/PaymentSettings";
+import PlatformSettings from "./pages/PlatformSettings";
 import AdminShell from "./components/AdminShell";
 import CustomerShell from "./components/CustomerShell";
 import { AdminRoute } from "./components/AdminRoute";
@@ -76,55 +79,15 @@ const App = () => {
                 </AdminRoute>
               }>
                 <Route index element={<PlatformAdminDashboard />} />
-              </Route>
-              <Route path="/admin/customers" element={
-                <AdminRoute>
-                  <AdminShell />
-                </AdminRoute>
-              }>
-                <Route index element={<UserManagement />} />
-              </Route>
-              <Route path="/admin/organizations" element={
-                <AdminRoute>
-                  <AdminShell />
-                </AdminRoute>
-              }>
-                <Route index element={<AdminOrganizations />} />
-              </Route>
-              <Route path="/admin/templates" element={
-                <AdminRoute>
-                  <AdminShell />
-                </AdminRoute>
-              }>
-                <Route index element={<AdminTemplates />} />
-              </Route>
-              <Route path="/admin/analytics" element={
-                <AdminRoute>
-                  <AdminShell />
-                </AdminRoute>
-              }>
-                <Route index element={<AdminAnalytics />} />
-              </Route>
-              <Route path="/admin/system" element={
-                <AdminRoute>
-                  <AdminShell />
-                </AdminRoute>
-              }>
-                <Route index element={<AdminSystem />} />
-              </Route>
-              <Route path="/admin/roles" element={
-                <AdminRoute>
-                  <AdminShell />
-                </AdminRoute>
-              }>
-                <Route index element={<RoleManagement />} />
-              </Route>
-              <Route path="/admin/settings" element={
-                <AdminRoute>
-                  <AdminShell />
-                </AdminRoute>
-              }>
-                <Route index element={<Settings />} />
+                <Route path="customers" element={<UserManagement />} />
+                <Route path="organizations" element={<AdminOrganizations />} />
+                <Route path="templates" element={<AdminTemplates />} />
+                <Route path="analytics" element={<AdminAnalytics />} />
+                <Route path="system" element={<AdminSystem />} />
+                <Route path="roles" element={<RoleManagement />} />
+                <Route path="settings" element={<PlatformSettings />} />
+                <Route path="subscription-tiers" element={<SubscriptionTierManagement />} />
+                <Route path="payment-settings" element={<PaymentSettings />} />
               </Route>
 
               {/* Customer routes - Compliance Management */}

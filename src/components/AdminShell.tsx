@@ -39,7 +39,8 @@ import {
   BarChart3,
   Database,
   UserCog,
-  Package
+  Package,
+  DollarSign
 } from "lucide-react";
 
 interface NavItem {
@@ -97,6 +98,18 @@ const AdminShellContent = () => {
       url: "/admin/roles",
       icon: UserCog,
       description: "Permissions & access control"
+    },
+    {
+      title: "Subscription Tiers",
+      url: "/admin/subscription-tiers",
+      icon: Package,
+      description: "Manage pricing plans & features"
+    },
+    {
+      title: "Payment Settings",
+      url: "/admin/payment-settings",
+      icon: DollarSign,
+      description: "Payment processing & billing"
     },
     {
       title: "Platform Settings",
