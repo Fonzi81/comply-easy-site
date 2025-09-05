@@ -9,17 +9,11 @@ interface AdminRouteProps {
 
 export const AdminRoute = ({ children }: AdminRouteProps) => {
   const { user, loading: authLoading } = useAuth();
-  const [isPlatformAdmin, setIsPlatformAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [isPlatformAdmin, setIsPlatformAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkAdminStatus = async () => {
-      if (authLoading) return;
-      
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+      if (authLoading || !user) return;
 
       try {
         const { data: profile, error } = await supabase
@@ -30,22 +24,28 @@ export const AdminRoute = ({ children }: AdminRouteProps) => {
 
         if (error) {
           console.error('Error checking admin status:', error);
-          setLoading(false);
+          setIsPlatformAdmin(false);
           return;
         }
 
         setIsPlatformAdmin(profile?.role === 'platform_admin');
       } catch (error) {
         console.error('Error in admin guard:', error);
-      } finally {
-        setLoading(false);
+        setIsPlatformAdmin(false);
       }
     };
 
-    checkAdminStatus();
+    if (!authLoading) {
+      if (!user) {
+        setIsPlatformAdmin(false);
+      } else {
+        checkAdminStatus();
+      }
+    }
   }, [user, authLoading]);
 
-  if (loading || authLoading) {
+  // Show loading while auth is loading or we haven't checked role yet
+  if (authLoading || isPlatformAdmin === null) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>

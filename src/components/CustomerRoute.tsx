@@ -9,17 +9,11 @@ interface CustomerRouteProps {
 
 export const CustomerRoute = ({ children }: CustomerRouteProps) => {
   const { user, loading: authLoading } = useAuth();
-  const [isCustomer, setIsCustomer] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [isCustomer, setIsCustomer] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkCustomerStatus = async () => {
-      if (authLoading) return;
-      
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+      if (authLoading || !user) return;
 
       try {
         const { data: profile, error } = await supabase
@@ -30,27 +24,29 @@ export const CustomerRoute = ({ children }: CustomerRouteProps) => {
 
         if (error) {
           console.error('Error checking customer status:', error);
-          setLoading(false);
+          setIsCustomer(false);
           return;
         }
 
-        // Allow customers and legacy users, but redirect platform admins to admin portal
-        if (profile?.role === 'platform_admin') {
-          setIsCustomer(false);
-        } else {
-          setIsCustomer(profile?.role === 'customer' || profile?.role === 'user');
-        }
+        // Allow customers and legacy users, but block platform admins
+        setIsCustomer(profile?.role !== 'platform_admin');
       } catch (error) {
         console.error('Error in customer guard:', error);
-      } finally {
-        setLoading(false);
+        setIsCustomer(false);
       }
     };
 
-    checkCustomerStatus();
+    if (!authLoading) {
+      if (!user) {
+        setIsCustomer(false);
+      } else {
+        checkCustomerStatus();
+      }
+    }
   }, [user, authLoading]);
 
-  if (loading || authLoading) {
+  // Show loading while auth is loading or we haven't checked role yet
+  if (authLoading || isCustomer === null) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
