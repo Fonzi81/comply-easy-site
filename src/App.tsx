@@ -14,6 +14,7 @@ import AuditPack from "./pages/AuditPack";
 import Templates from "./pages/Templates";
 import Settings from "./pages/Settings";
 import UserManagement from "@/pages/UserManagement";
+import CustomerManagement from "@/pages/CustomerManagement";
 import RoleManagement from "@/pages/RoleManagement";
 import PlatformAdminDashboard from "@/pages/PlatformAdminDashboard";
 import AdminAnalytics from "@/pages/AdminAnalytics";
@@ -79,7 +80,8 @@ const App = () => {
                 </AdminRoute>
               }>
                 <Route index element={<PlatformAdminDashboard />} />
-                <Route path="customers" element={<UserManagement />} />
+                <Route path="customers" element={<CustomerManagement />} />
+                <Route path="users" element={<UserManagement />} />
                 <Route path="organizations" element={<AdminOrganizations />} />
                 <Route path="templates" element={<AdminTemplates />} />
                 <Route path="analytics" element={<AdminAnalytics />} />

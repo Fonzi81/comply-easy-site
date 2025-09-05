@@ -913,6 +913,20 @@ export type Database = {
           login_count: number
         }[]
       }
+      admin_list_customers: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          last_login: string
+          mrr: number
+          role: Database["public"]["Enums"]["user_role"]
+          subscription_status: string
+          subscription_tier: string
+        }[]
+      }
       admin_list_users: {
         Args: Record<PropertyKey, never>
         Returns: {

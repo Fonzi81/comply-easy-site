@@ -70,6 +70,12 @@ const AdminShellContent = () => {
       description: "Manage customer accounts & subscriptions"
     },
     {
+      title: "User Management",
+      url: "/admin/users",
+      icon: UserCog,
+      description: "Manage admin & platform users"
+    },
+    {
       title: "Organizations",
       url: "/admin/organizations",
       icon: Building2,
