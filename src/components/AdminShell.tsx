@@ -155,8 +155,8 @@ const AdminShellContent = () => {
                         className={({ isActive }) => 
                           `flex items-center gap-3 ${
                             isActive 
-                              ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600' 
-                              : 'text-slate-700 hover:bg-slate-50'
+                              ? 'bg-accent text-accent-foreground border-r-2 border-primary' 
+                              : 'text-foreground hover:bg-accent/50 hover:text-accent-foreground'
                           }`
                         }
                       >
