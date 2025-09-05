@@ -34,31 +34,13 @@ import Resources from "./pages/Resources";
 import Partners from "./pages/Partners";
 import Security from "./pages/Security";
 import NotFound from "./pages/NotFound";
-import AppShell from "./components/AppShell";
+import AdminShell from "./components/AdminShell";
+import CustomerShell from "./components/CustomerShell";
+import { AdminRoute } from "./components/AdminRoute";
+import { CustomerRoute } from "./components/CustomerRoute";
 import { AuthProvider } from "@/hooks/useAuth";
-import { Navigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 
 const queryClient = new QueryClient();
-
-// Protected Route Component
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <>{children}</>;
-};
 
 const App = () => {
   return (
@@ -87,104 +69,113 @@ const App = () => {
               <Route path="/partners" element={<Partners />} />
               <Route path="/security" element={<Security />} />
               
-              {/* Protected app routes */}
-              <Route path="/dashboard" element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
-              }>
-                <Route index element={<Dashboard />} />
-              </Route>
-              <Route path="/tasks" element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
-              }>
-                <Route index element={<Tasks />} />
-              </Route>
-              <Route path="/calendar" element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
-              }>
-                <Route index element={<CalendarView />} />
-              </Route>
-              <Route path="/evidence" element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
-              }>
-                <Route index element={<Evidence />} />
-              </Route>
-              <Route path="/audit-pack" element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
-              }>
-                <Route index element={<AuditPack />} />
-              </Route>
-              <Route path="/templates" element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
-              }>
-                <Route index element={<Templates />} />
-              </Route>
-              <Route path="/settings" element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
-              }>
-                <Route index element={<Settings />} />
-              </Route>
+              {/* Admin routes - Platform Administration */}
               <Route path="/admin" element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
+                <AdminRoute>
+                  <AdminShell />
+                </AdminRoute>
               }>
                 <Route index element={<AdminDashboard />} />
               </Route>
-              <Route path="/admin/users" element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
+              <Route path="/admin/customers" element={
+                <AdminRoute>
+                  <AdminShell />
+                </AdminRoute>
               }>
                 <Route index element={<UserManagement />} />
               </Route>
-              <Route path="/admin/roles" element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
-              }>
-                <Route index element={<RoleManagement />} />
-              </Route>
-              <Route path="/admin/analytics" element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
-              }>
-                <Route index element={<AdminAnalytics />} />
-              </Route>
-              <Route path="/admin/system" element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
-              }>
-                <Route index element={<AdminSystem />} />
-              </Route>
               <Route path="/admin/organizations" element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
+                <AdminRoute>
+                  <AdminShell />
+                </AdminRoute>
               }>
                 <Route index element={<AdminOrganizations />} />
               </Route>
               <Route path="/admin/templates" element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
+                <AdminRoute>
+                  <AdminShell />
+                </AdminRoute>
               }>
                 <Route index element={<AdminTemplates />} />
+              </Route>
+              <Route path="/admin/analytics" element={
+                <AdminRoute>
+                  <AdminShell />
+                </AdminRoute>
+              }>
+                <Route index element={<AdminAnalytics />} />
+              </Route>
+              <Route path="/admin/system" element={
+                <AdminRoute>
+                  <AdminShell />
+                </AdminRoute>
+              }>
+                <Route index element={<AdminSystem />} />
+              </Route>
+              <Route path="/admin/roles" element={
+                <AdminRoute>
+                  <AdminShell />
+                </AdminRoute>
+              }>
+                <Route index element={<RoleManagement />} />
+              </Route>
+              <Route path="/admin/settings" element={
+                <AdminRoute>
+                  <AdminShell />
+                </AdminRoute>
+              }>
+                <Route index element={<Settings />} />
+              </Route>
+
+              {/* Customer routes - Compliance Management */}
+              <Route path="/dashboard" element={
+                <CustomerRoute>
+                  <CustomerShell />
+                </CustomerRoute>
+              }>
+                <Route index element={<Dashboard />} />
+              </Route>
+              <Route path="/tasks" element={
+                <CustomerRoute>
+                  <CustomerShell />
+                </CustomerRoute>
+              }>
+                <Route index element={<Tasks />} />
+              </Route>
+              <Route path="/calendar" element={
+                <CustomerRoute>
+                  <CustomerShell />
+                </CustomerRoute>
+              }>
+                <Route index element={<CalendarView />} />
+              </Route>
+              <Route path="/evidence" element={
+                <CustomerRoute>
+                  <CustomerShell />
+                </CustomerRoute>
+              }>
+                <Route index element={<Evidence />} />
+              </Route>
+              <Route path="/audit-pack" element={
+                <CustomerRoute>
+                  <CustomerShell />
+                </CustomerRoute>
+              }>
+                <Route index element={<AuditPack />} />
+              </Route>
+              <Route path="/templates" element={
+                <CustomerRoute>
+                  <CustomerShell />
+                </CustomerRoute>
+              }>
+                <Route index element={<Templates />} />
+              </Route>
+              <Route path="/settings" element={
+                <CustomerRoute>
+                  <CustomerShell />
+                </CustomerRoute>
+              }>
+                <Route index element={<Settings />} />
               </Route>
               
               <Route path="*" element={<NotFound />} />

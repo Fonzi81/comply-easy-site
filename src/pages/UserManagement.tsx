@@ -49,7 +49,7 @@ import UserActivityModal from '@/components/UserActivityModal';
 interface User {
   id: string;
   email: string;
-  role: 'admin' | 'user';
+  role: 'admin' | 'user' | 'platform_admin' | 'customer';
   full_name: string | null;
   created_at: string;
 }
@@ -60,7 +60,7 @@ export default function UserManagement() {
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [usersLoading, setUsersLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'user'>('all');
+  const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'user' | 'platform_admin' | 'customer'>('all');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
@@ -211,8 +211,12 @@ export default function UserManagement() {
 
   const getRoleColor = (role: string) => {
     switch (role) {
+      case 'platform_admin':
+        return 'destructive';
       case 'admin':
         return 'destructive';
+      case 'customer':
+        return 'default';
       case 'user':
         return 'secondary';
       default:
@@ -306,7 +310,9 @@ export default function UserManagement() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Roles</SelectItem>
+                <SelectItem value="platform_admin">Platform Admins</SelectItem>
                 <SelectItem value="admin">Administrators</SelectItem>
+                <SelectItem value="customer">Customers</SelectItem>
                 <SelectItem value="user">Users</SelectItem>
               </SelectContent>
             </Select>
