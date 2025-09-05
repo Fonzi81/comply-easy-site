@@ -208,12 +208,13 @@ export default function SubscriptionTierManagement() {
               {/* Pricing */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Monthly Price (cents)</Label>
+                  <Label>Monthly Price ($)</Label>
                   {editingTier === tier.id ? (
                     <Input
                       type="number"
-                      value={tier.price_monthly}
-                      onChange={(e) => updateTierField(tier.id, 'price_monthly', parseInt(e.target.value) || 0)}
+                      step="0.01"
+                      value={(tier.price_monthly / 100).toFixed(2)}
+                      onChange={(e) => updateTierField(tier.id, 'price_monthly', Math.round(parseFloat(e.target.value) * 100) || 0)}
                     />
                   ) : (
                     <div className="flex items-center space-x-2">
@@ -223,12 +224,13 @@ export default function SubscriptionTierManagement() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label>Yearly Price (cents)</Label>
+                  <Label>Yearly Price ($)</Label>
                   {editingTier === tier.id ? (
                     <Input
                       type="number"
-                      value={tier.price_yearly}
-                      onChange={(e) => updateTierField(tier.id, 'price_yearly', parseInt(e.target.value) || 0)}
+                      step="0.01"
+                      value={(tier.price_yearly / 100).toFixed(2)}
+                      onChange={(e) => updateTierField(tier.id, 'price_yearly', Math.round(parseFloat(e.target.value) * 100) || 0)}
                     />
                   ) : (
                     <div className="flex items-center space-x-2">
