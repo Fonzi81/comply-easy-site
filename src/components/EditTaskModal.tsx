@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -8,21 +8,32 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
-import { CalendarIcon, Plus } from "lucide-react";
+import { CalendarIcon, Save } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
-interface AddTaskModalProps {
+interface ComplianceTask {
+  id: string;
+  title: string;
+  description: string | null;
+  category: 'food_safety' | 'whs' | 'fire_safety' | 'test_tag';
+  due_date: string;
+  status: 'pending' | 'in_progress' | 'completed' | 'overdue';
+  priority: number;
+  assigned_to: string | null;
+  evidence_required: boolean;
+}
+
+interface EditTaskModalProps {
+  task: ComplianceTask | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
 }
 
-const AddTaskModal = ({ open, onOpenChange, onSuccess }: AddTaskModalProps) => {
-  const { user } = useAuth();
+const EditTaskModal = ({ task, open, onOpenChange, onSuccess }: EditTaskModalProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -35,30 +46,32 @@ const AddTaskModal = ({ open, onOpenChange, onSuccess }: AddTaskModalProps) => {
     evidenceRequired: false
   });
 
+  useEffect(() => {
+    if (task) {
+      setFormData({
+        title: task.title,
+        description: task.description || "",
+        category: task.category,
+        priority: task.priority,
+        dueDate: new Date(task.due_date),
+        assignedTo: task.assigned_to || "",
+        evidenceRequired: task.evidence_required
+      });
+    }
+  }, [task]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.category || !formData.dueDate || !user) {
+    if (!task || !formData.title || !formData.category || !formData.dueDate) {
       return;
     }
 
     setLoading(true);
     try {
-      // Get user's organization
-      const { data: orgMembers, error: orgError } = await supabase
-        .from('organization_members')
-        .select('organization_id')
-        .eq('user_id', user.id)
-        .limit(1);
-
-      if (orgError) throw orgError;
-      if (!orgMembers.length) {
-        throw new Error('No organization found');
-      }
-
       const { error } = await supabase
         .from('compliance_tasks')
-        .insert({
+        .update({
           title: formData.title,
           description: formData.description || null,
           category: formData.category as 'food_safety' | 'whs' | 'fire_safety' | 'test_tag',
@@ -66,36 +79,24 @@ const AddTaskModal = ({ open, onOpenChange, onSuccess }: AddTaskModalProps) => {
           due_date: formData.dueDate.toISOString(),
           assigned_to: formData.assignedTo || null,
           evidence_required: formData.evidenceRequired,
-          created_by: user.id,
-          organization_id: orgMembers[0].organization_id,
-          status: 'pending'
-        });
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', task.id);
 
       if (error) throw error;
 
       toast({
         title: "Success",
-        description: "Task created successfully",
-      });
-      
-      // Reset form
-      setFormData({
-        title: "",
-        description: "",
-        category: "",
-        priority: 2,
-        dueDate: undefined,
-        assignedTo: "",
-        evidenceRequired: false
+        description: "Task updated successfully",
       });
       
       onSuccess();
       onOpenChange(false);
     } catch (error) {
-      console.error('Error creating task:', error);
+      console.error('Error updating task:', error);
       toast({
         title: "Error",
-        description: "Failed to create task",
+        description: "Failed to update task",
         variant: "destructive",
       });
     } finally {
@@ -108,11 +109,11 @@ const AddTaskModal = ({ open, onOpenChange, onSuccess }: AddTaskModalProps) => {
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
-            <Plus className="w-5 h-5 text-primary" />
-            <span>Add Compliance Task</span>
+            <Save className="w-5 h-5 text-primary" />
+            <span>Edit Compliance Task</span>
           </DialogTitle>
           <DialogDescription>
-            Create a new compliance task with automatic reminders and tracking.
+            Update the compliance task details and requirements.
           </DialogDescription>
         </DialogHeader>
         
@@ -200,7 +201,6 @@ const AddTaskModal = ({ open, onOpenChange, onSuccess }: AddTaskModalProps) => {
                     selected={formData.dueDate}
                     onSelect={(date) => setFormData(prev => ({ ...prev, dueDate: date }))}
                     initialFocus
-                    className="pointer-events-auto"
                   />
                 </PopoverContent>
               </Popover>
@@ -233,8 +233,8 @@ const AddTaskModal = ({ open, onOpenChange, onSuccess }: AddTaskModalProps) => {
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>
-              <Plus className="w-4 h-4 mr-2" />
-              {loading ? "Creating..." : "Create Task"}
+              <Save className="w-4 h-4 mr-2" />
+              {loading ? "Updating..." : "Update Task"}
             </Button>
           </DialogFooter>
         </form>
@@ -243,4 +243,4 @@ const AddTaskModal = ({ open, onOpenChange, onSuccess }: AddTaskModalProps) => {
   );
 };
 
-export default AddTaskModal;
+export default EditTaskModal;

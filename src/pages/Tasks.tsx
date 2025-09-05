@@ -25,25 +25,37 @@ import {
   CheckCircle,
   Clock,
   Filter,
-  Eye
+  Eye,
+  Plus,
+  Edit,
+  Trash2
 } from "lucide-react";
 import TaskDetailModal from "@/components/TaskDetailModal";
+import AddTaskModal from "@/components/AddTaskModal";
+import EditTaskModal from "@/components/EditTaskModal";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { format } from "date-fns";
 
 interface ComplianceTask {
   id: string;
   title: string;
-  category: 'Food Safety' | 'WHS' | 'Fire Safety' | 'Test & Tag';
-  dueDate: string;
-  status: 'Due' | 'Overdue' | 'Completed';
-  evidenceAttached: boolean;
-  assignedTo: string;
-  description?: string;
-  priority?: 'High' | 'Medium' | 'Low';
-  notes?: string;
+  description: string | null;
+  category: 'food_safety' | 'whs' | 'fire_safety' | 'test_tag';
+  due_date: string;
+  status: 'pending' | 'in_progress' | 'completed' | 'overdue';
+  priority: number;
+  assigned_to: string | null;
+  created_by: string;
+  organization_id: string;
+  created_at: string;
+  updated_at: string;
+  evidence_required: boolean;
 }
 
 const Tasks = () => {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState<ComplianceTask[]>([]);
   const [filteredTasks, setFilteredTasks] = useState<ComplianceTask[]>([]);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -51,75 +63,46 @@ const Tasks = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTask, setSelectedTask] = useState<ComplianceTask | null>(null);
   const [taskDetailOpen, setTaskDetailOpen] = useState(false);
+  const [addTaskOpen, setAddTaskOpen] = useState(false);
+  const [editTaskOpen, setEditTaskOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<ComplianceTask | null>(null);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Sample task data with enhanced details
-    const sampleTasks: ComplianceTask[] = [
-      {
-        id: '1',
-        title: 'Temperature Log Review',
-        category: 'Food Safety',
-        dueDate: '2024-01-15',
-        status: 'Due',
-        evidenceAttached: false,
-        assignedTo: 'John Smith',
-        description: 'Review and verify all temperature logs for refrigeration units. Ensure all readings are within safe ranges and document any anomalies.',
-        priority: 'High',
-        notes: ''
-      },
-      {
-        id: '2',
-        title: 'Fire Extinguisher Inspection',
-        category: 'Fire Safety',
-        dueDate: '2024-01-10',
-        status: 'Overdue',
-        evidenceAttached: true,
-        assignedTo: 'Sarah Johnson',
-        description: 'Monthly inspection of all fire extinguishers. Check pressure gauges, safety pins, and overall condition. Update maintenance tags.',
-        priority: 'High',
-        notes: 'Extinguisher in kitchen needs pressure check'
-      },
-      {
-        id: '3',
-        title: 'Staff Safety Training',
-        category: 'WHS',
-        dueDate: '2024-01-20',
-        status: 'Due',
-        evidenceAttached: false,
-        assignedTo: 'Mike Wilson',
-        description: 'Quarterly workplace health and safety training session for all staff members. Cover emergency procedures and hazard identification.',
-        priority: 'Medium',
-        notes: ''
-      },
-      {
-        id: '4',
-        title: 'Equipment PAT Testing',
-        category: 'Test & Tag',
-        dueDate: '2024-01-05',
-        status: 'Completed',
-        evidenceAttached: true,
-        assignedTo: 'Lisa Brown',
-        description: 'Portable appliance testing for all electrical equipment as per AS/NZS 3760 standards.',
-        priority: 'Medium',
-        notes: 'All equipment passed testing'
-      },
-      {
-        id: '5',
-        title: 'Food Safety Audit',
-        category: 'Food Safety',
-        dueDate: '2024-01-08',
-        status: 'Overdue',
-        evidenceAttached: false,
-        assignedTo: 'John Smith',
-        description: 'Comprehensive food safety audit covering all kitchen areas, storage facilities, and food handling procedures.',
-        priority: 'High',
-        notes: 'Need to schedule with external auditor'
-      }
-    ];
-    setTasks(sampleTasks);
-    setFilteredTasks(sampleTasks);
-  }, []);
+    if (user) {
+      loadTasks();
+    }
+  }, [user]);
+
+  const loadTasks = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('compliance_tasks')
+        .select(`
+          *,
+          organizations!inner(id)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      setTasks(data || []);
+      setFilteredTasks(data || []);
+    } catch (error) {
+      console.error('Error loading tasks:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load tasks",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     let filtered = tasks;
@@ -135,7 +118,8 @@ const Tasks = () => {
     if (searchQuery) {
       filtered = filtered.filter(task =>
         task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        task.assignedTo.toLowerCase().includes(searchQuery.toLowerCase())
+        task.assigned_to?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        task.description?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -144,11 +128,12 @@ const Tasks = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'Completed':
+      case 'completed':
         return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'Overdue':
+      case 'overdue':
         return <AlertTriangle className="w-4 h-4 text-destructive" />;
-      case 'Due':
+      case 'pending':
+      case 'in_progress':
         return <Clock className="w-4 h-4 text-accent" />;
       default:
         return null;
@@ -157,65 +142,137 @@ const Tasks = () => {
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
-      case 'Completed':
+      case 'completed':
         return 'default';
-      case 'Overdue':
+      case 'overdue':
         return 'destructive';
-      case 'Due':
+      case 'pending':
+      case 'in_progress':
         return 'secondary';
       default:
         return 'secondary';
     }
   };
 
+  const getStatusDisplayText = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'Due';
+      case 'in_progress':
+        return 'In Progress';
+      case 'completed':
+        return 'Completed';
+      case 'overdue':
+        return 'Overdue';
+      default:
+        return status;
+    }
+  };
+
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'Food Safety':
+      case 'food_safety':
         return 'bg-blue-100 text-blue-800';
-      case 'WHS':
+      case 'whs':
         return 'bg-orange-100 text-orange-800';
-      case 'Fire Safety':
+      case 'fire_safety':
         return 'bg-red-100 text-red-800';
-      case 'Test & Tag':
+      case 'test_tag':
         return 'bg-green-100 text-green-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const markComplete = (taskId: string) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId ? { ...task, status: 'Completed' as const } : task
-      )
-    );
-    toast({
-      title: "Task completed",
-      description: "The task has been marked as complete.",
-    });
+  const getCategoryDisplayText = (category: string) => {
+    switch (category) {
+      case 'food_safety':
+        return 'Food Safety';
+      case 'whs':
+        return 'WHS';
+      case 'fire_safety':
+        return 'Fire Safety';
+      case 'test_tag':
+        return 'Test & Tag';
+      default:
+        return category;
+    }
+  };
+
+  const getPriorityText = (priority: number) => {
+    switch (priority) {
+      case 3:
+        return 'High';
+      case 2:
+        return 'Medium';
+      case 1:
+        return 'Low';
+      default:
+        return 'Medium';
+    }
+  };
+
+  const markComplete = async (taskId: string) => {
+    try {
+      const { error } = await supabase
+        .from('compliance_tasks')
+        .update({ 
+          status: 'completed',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      await loadTasks();
+      toast({
+        title: "Task completed",
+        description: "The task has been marked as complete.",
+      });
+    } catch (error) {
+      console.error('Error completing task:', error);
+      toast({
+        title: "Error",
+        description: "Failed to complete task",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      const { error } = await supabase
+        .from('compliance_tasks')
+        .delete()
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      await loadTasks();
+      toast({
+        title: "Task deleted",
+        description: "The task has been permanently deleted.",
+      });
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete task",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEditTask = (task: ComplianceTask) => {
+    setEditingTask(task);
+    setEditTaskOpen(true);
   };
 
   const handleUploadEvidence = (taskId: string) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId ? { ...task, evidenceAttached: true } : task
-      )
-    );
+    // This would integrate with actual evidence upload functionality
     toast({
-      title: "Evidence uploaded",
-      description: "Evidence has been attached to the task.",
-    });
-  };
-
-  const handleUpdateNotes = (taskId: string, notes: string) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId ? { ...task, notes } : task
-      )
-    );
-    toast({
-      title: "Notes updated",
-      description: "Task notes have been saved.",
+      title: "Evidence upload",
+      description: "Evidence upload functionality coming soon.",
     });
   };
 
@@ -225,14 +282,22 @@ const Tasks = () => {
   };
 
   const isOverdue = (task: ComplianceTask) => {
-    if (task.status === 'Overdue') {
-      const dueDate = new Date(task.dueDate);
+    if (task.status === 'overdue') {
+      const dueDate = new Date(task.due_date);
       const today = new Date();
       const daysDiff = Math.ceil((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
       return daysDiff > 7; // Critical if overdue by more than 7 days
     }
     return false;
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -269,9 +334,10 @@ const Tasks = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="Due">Due</SelectItem>
-                  <SelectItem value="Overdue">Overdue</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
+                  <SelectItem value="pending">Due</SelectItem>
+                  <SelectItem value="in_progress">In Progress</SelectItem>
+                  <SelectItem value="overdue">Overdue</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -283,10 +349,10 @@ const Tasks = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="Food Safety">Food Safety</SelectItem>
-                  <SelectItem value="WHS">WHS</SelectItem>
-                  <SelectItem value="Fire Safety">Fire Safety</SelectItem>
-                  <SelectItem value="Test & Tag">Test & Tag</SelectItem>
+                  <SelectItem value="food_safety">Food Safety</SelectItem>
+                  <SelectItem value="whs">WHS</SelectItem>
+                  <SelectItem value="fire_safety">Fire Safety</SelectItem>
+                  <SelectItem value="test_tag">Test & Tag</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -316,6 +382,10 @@ const Tasks = () => {
                 {filteredTasks.length} tasks found
               </CardDescription>
             </div>
+            <Button onClick={() => setAddTaskOpen(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Task
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -337,7 +407,7 @@ const Tasks = () => {
                   <TableRow 
                     key={task.id}
                     className={`cursor-pointer ${
-                      task.status === 'Overdue' 
+                      task.status === 'overdue' 
                         ? isOverdue(task)
                           ? 'bg-destructive/20 hover:bg-destructive/30' // Critical overdue
                           : 'bg-accent/20 hover:bg-accent/30' // Regular overdue
@@ -348,7 +418,7 @@ const Tasks = () => {
                     <TableCell className="font-medium">
                       <div className="flex items-center space-x-2">
                         <span>{task.title}</span>
-                        {task.priority === 'High' && (
+                        {task.priority === 3 && (
                           <Badge variant="destructive" className="text-xs">High</Badge>
                         )}
                       </div>
@@ -358,26 +428,26 @@ const Tasks = () => {
                         variant="outline" 
                         className={getCategoryColor(task.category)}
                       >
-                        {task.category}
+                        {getCategoryDisplayText(task.category)}
                       </Badge>
                     </TableCell>
-                    <TableCell>{task.dueDate}</TableCell>
+                    <TableCell>{format(new Date(task.due_date), 'yyyy-MM-dd')}</TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
                         {getStatusIcon(task.status)}
                         <Badge variant={getStatusBadgeVariant(task.status)}>
-                          {task.status}
+                          {getStatusDisplayText(task.status)}
                         </Badge>
                       </div>
                     </TableCell>
                     <TableCell>
-                      {task.evidenceAttached ? (
-                        <Badge variant="default">Attached</Badge>
+                      {task.evidence_required ? (
+                        <Badge variant="outline">Required</Badge>
                       ) : (
-                        <Badge variant="outline">None</Badge>
+                        <Badge variant="outline">Optional</Badge>
                       )}
                     </TableCell>
-                    <TableCell>{task.assignedTo}</TableCell>
+                    <TableCell>{task.assigned_to || 'Unassigned'}</TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
                         <Button
@@ -391,7 +461,18 @@ const Tasks = () => {
                           <Eye className="w-4 h-4 mr-1" />
                           View
                         </Button>
-                        {task.status !== 'Completed' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditTask(task);
+                          }}
+                        >
+                          <Edit className="w-4 h-4 mr-1" />
+                          Edit
+                        </Button>
+                        {task.status !== 'completed' && (
                           <Button
                             size="sm"
                             variant="outline"
@@ -415,6 +496,18 @@ const Tasks = () => {
                           <Upload className="w-4 h-4 mr-1" />
                           Evidence
                         </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (confirm('Are you sure you want to delete this task?')) {
+                              handleDeleteTask(task.id);
+                            }
+                          }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -431,7 +524,21 @@ const Tasks = () => {
         onOpenChange={setTaskDetailOpen}
         onMarkComplete={markComplete}
         onUploadEvidence={handleUploadEvidence}
-        onUpdateNotes={handleUpdateNotes}
+        onEdit={handleEditTask}
+        onDelete={handleDeleteTask}
+      />
+
+      <AddTaskModal
+        open={addTaskOpen}
+        onOpenChange={setAddTaskOpen}
+        onSuccess={loadTasks}
+      />
+
+      <EditTaskModal
+        task={editingTask}
+        open={editTaskOpen}
+        onOpenChange={setEditTaskOpen}
+        onSuccess={loadTasks}
       />
     </div>
   );

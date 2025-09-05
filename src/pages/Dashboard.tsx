@@ -352,7 +352,7 @@ const Dashboard = () => {
       <AddTaskModal 
         open={isAddTaskOpen}
         onOpenChange={setIsAddTaskOpen}
-        onAddTask={handleAddTask}
+        onSuccess={loadComplianceData}
       />
       
       <AuditPackModal 
