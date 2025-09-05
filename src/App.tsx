@@ -18,6 +18,8 @@ import RoleManagement from "@/pages/RoleManagement";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AdminAnalytics from "@/pages/AdminAnalytics";
 import AdminSystem from "@/pages/AdminSystem";
+import AdminOrganizations from "@/pages/AdminOrganizations";
+import AdminTemplates from "@/pages/AdminTemplates";
 import ProductOverview from "./pages/ProductOverview";
 import FoodSafety from "./pages/FoodSafety";
 import WHS from "./pages/WHS";
@@ -169,6 +171,20 @@ const App = () => {
                 </ProtectedRoute>
               }>
                 <Route index element={<AdminSystem />} />
+              </Route>
+              <Route path="/admin/organizations" element={
+                <ProtectedRoute>
+                  <AppShell />
+                </ProtectedRoute>
+              }>
+                <Route index element={<AdminOrganizations />} />
+              </Route>
+              <Route path="/admin/templates" element={
+                <ProtectedRoute>
+                  <AppShell />
+                </ProtectedRoute>
+              }>
+                <Route index element={<AdminTemplates />} />
               </Route>
               
               <Route path="*" element={<NotFound />} />

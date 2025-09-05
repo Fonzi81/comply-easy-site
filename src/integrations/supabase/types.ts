@@ -522,6 +522,13 @@ export type Database = {
         Args: { perm_key: string; role_key: string }
         Returns: boolean
       }
+      admin_bulk_update_user_roles: {
+        Args: {
+          new_role: Database["public"]["Enums"]["user_role"]
+          user_ids: string[]
+        }
+        Returns: number
+      }
       admin_get_analytics: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -533,6 +540,20 @@ export type Database = {
           total_organizations: number
           total_tasks: number
           total_users: number
+        }[]
+      }
+      admin_get_organization_analytics: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          completed_tasks: number
+          created_at: string
+          evidence_count: number
+          last_activity: string
+          member_count: number
+          org_id: string
+          org_name: string
+          storage_used: number
+          task_count: number
         }[]
       }
       admin_get_permissions: {
@@ -552,6 +573,29 @@ export type Database = {
           permission_count: number
         }[]
       }
+      admin_get_template_analytics: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          category: string
+          created_at: string
+          industry: string
+          is_active: boolean
+          last_used: string
+          state_code: string
+          template_id: string
+          template_name: string
+          usage_count: number
+        }[]
+      }
+      admin_get_user_activity: {
+        Args: { days_back?: number; target_user_id: string }
+        Returns: {
+          action_count: number
+          activity_date: string
+          last_action_time: string
+          login_count: number
+        }[]
+      }
       admin_list_users: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -564,6 +608,10 @@ export type Database = {
       }
       admin_revoke_permission: {
         Args: { perm_key: string; role_key: string }
+        Returns: boolean
+      }
+      admin_update_user_status: {
+        Args: { is_active: boolean; target_user_id: string }
         Returns: boolean
       }
       get_user_profile_with_role: {

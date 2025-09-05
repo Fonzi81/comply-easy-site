@@ -2,7 +2,7 @@ import { useAdminGuard } from '@/hooks/useAdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Users, Shield, Settings, BarChart3, Activity } from 'lucide-react';
+import { Users, Shield, Settings, BarChart3, Activity, Building2, FileText } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -88,17 +88,36 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              System Health
+              Organization Management
             </CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+            <Building2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <CardDescription className="mb-4">
-              Monitor system performance and health
+              Monitor organization usage and performance
             </CardDescription>
-            <Link to="/admin/system">
+            <Link to="/admin/organizations">
               <Button size="sm" className="w-full">
-                System Status
+                Manage Organizations
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Template Management
+            </CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <CardDescription className="mb-4">
+              Manage compliance templates and usage analytics
+            </CardDescription>
+            <Link to="/admin/templates">
+              <Button size="sm" className="w-full">
+                Manage Templates
               </Button>
             </Link>
           </CardContent>
